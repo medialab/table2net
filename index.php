@@ -79,6 +79,9 @@
             <div class="row">
                 <div class="span12">
                     <h2>Load your CSV table</h2>
+                    <p class="text-info">
+                        It has to be <strong><a href='http://en.wikipedia.org/wiki/CSV' target='_blank'>comma-separated</a></strong> and the first row must be dedicated to <strong>column names</strong>.
+                    </p>
                 </div>
             </div>
             <div class="row">
