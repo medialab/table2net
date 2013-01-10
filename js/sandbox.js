@@ -156,64 +156,108 @@ var fileLoader = {
 
 
 function buildUI(){
-    $("#UI").html('<h4>Table preview</h4><div id="dataPreview"><table class="table table-condensed table-bordered">'
+    $("#UI").append(
+        $('<div/>').html('<h4>Table preview</h4><div id="dataPreview"><table class="table table-condensed table-bordered">'
         +table.filter(function(d,i){return i<10})
             .map(function(row, i){return '<tr>'
             +row.map(function(d){return ((i==0)?('<th>'):('<td>'))+d.substr(0,200)+((i==0)?('</th>'):('</td>'));})
                 .join('')
             +'</tr>';}).join('')
-        +'</table></div>'
-        +'<table><tr>'
-        +'<td id="network_type1"><img id="network_type1_img" src="res/xyx.png"/><br/><b>1. Mono (Co-occurrence)</b><br/><i>Ex: Authors linked by Papers</i></td>'
-        +'<td id="network_type2"><img id="network_type2_img" src="res/xy.png"/><br/><b>2. Bipartite</b><br/><i>Ex: Authors and Papers</i></td>'
-        +'<td id="network_type3"><img id="network_type3_img" src="res/xx.png"/><br/><b>3. Citations</b><br/><i>Ex: Papers citing Papers</i></td>'
-        +'<td id="network_type4"><img id="network_type4_img" src="res/x.png"/><br/><b>4. No link</b><br/></td>'
-        +'</tr></table><br/>'
-        +'<b>Type of Network</b><br/>'
-        +'<select id="typeOfGraph" onchange="buildUI_set()">'
-        +'<option value="none">Choose...</option>'
-        +'<option value="mono">1. Mono (Co-occurrence)</option>'
-        +'<option value="bipartite">2. Bipartite</option>'
-        +'<option value="citation">3. Citations</option>'
-        +'<option value="table">4. No link</option>'
-        +'</select><br/><br/><div id="buildUI_result">'
-        +'</div>');
+        +'</table></div>')
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span12"/>').append(
+                $('<hr/>')
+            ).append(
+                $('<h2/>').text('1. Type of Network')
+            ).append(
+                $('<div class="row"/>').append(
+                    $('<div class="span6"/>').append(
+                        $('<select id="typeOfGraph" class="span6"/>')
+                            .append($('<option value="none">Choose type of network...</option>'))
+                            .append($('<option value="mono">Normal (one type of node)</option>'))
+                            .append($('<option value="bipartite">Bipartite (two types of nodes)</option>'))
+                            .append($('<option value="citation">Citations</option>'))
+                            .append($('<option value="table">No link</option>'))
+                            .on('change', buildUI_set)
+                    ).append(
+                        $('<div id="typeOfGraph_img"/>')
+                            .css('padding-top', '20px')
+                    )
+                ).append(
+                    $('<div class="span6" id="typeOfGraph_help"/>').append(
+                        $('<p class="text-info"/>').text(
+                            'You may extract different types of networks from a table. It depends on how you use columns to build the nodes and the edges. '
+                        )
+                    ).append(
+                        $('<p class="text-info"/>').append(
+                            $('<ul/>').append(
+                                $('<li><img id="network_type1_img" class="pull-right" src="res/xyx_disabled.png"/><strong>Normal: </strong> if you want a single type of nodes, for instance <em>authors</em>. They will be linked when they share a value in another column, for instance <em>papers</em>.</li>')
+                                    .css('padding-bottom', '20px')
+                            ).append(
+                                $('<li><img id="network_type1_img" class="pull-right" src="res/xy_disabled.png"/><strong>Bipartite: </strong> if you want two types of nodes, for instance <em>authors</em> and <em>papers</em>, they will be linked whey they appear in the same row of the table.</li>')
+                                    .css('padding-bottom', '20px')
+                            ).append(
+                                $('<li><img id="network_type1_img" class="pull-right" src="res/xx_disabled.png"/><strong>Citation: </strong> if you have a column containing references to another one, for instance <em>paper title</em> and <em>cited papers (title)</em></li>')
+                                    .css('padding-bottom', '20px')
+                            ).append(
+                                $('<li><img id="network_type1_img" class="pull-right" src="res/x_disabled.png"/><strong>No link: </strong> a single type of nodes, without link</li>')
+                                    .css('padding-bottom', '20px')
+                            )
+                        )
+                    )
+                )
+            ).append(
+                $('<div class="row"/>').append(
+                    $('<div class="span12" id="buildUI_result"/>')
+                )
+            )
+        )
+    )
+    buildUI_set()
+    
 }
 
 function buildUI_set(){
     if($("#typeOfGraph").val() == "none"){
+        $('#typeOfGraph_img').html('')
+
         $("#buildUI_result").html('');
         
     } else if($("#typeOfGraph").val() == "mono"){
-        $("#network_type1_img").attr("src", "res/xyx.png");
-        $("#network_type2_img").attr("src", "res/xy_disabled.png");
-        $("#network_type3_img").attr("src", "res/xx_disabled.png");
-        $("#network_type4_img").attr("src", "res/x_disabled.png");
+        $('#typeOfGraph_img').html('<p><img id="network_type1_img" src="res/xyx.png"/></p>')
+            .append(
+                $('<p>You will have to choose:<ul><li>Which column <img src="res/x_node.png"> will define the nodes</li><li>Which column <img src="res/y_edge.png"> will define the edges</li></ul></p>')
+            )
+
         nodesColumn_build("#buildUI_result");
             
     } else if($("#typeOfGraph").val() == "bipartite"){
-        $("#network_type1_img").attr("src", "res/xyx_disabled.png");
-        $("#network_type2_img").attr("src", "res/xy.png");
-        $("#network_type3_img").attr("src", "res/xx_disabled.png");
-        $("#network_type4_img").attr("src", "res/x_disabled.png");
+        $('#typeOfGraph_img').html('<img id="network_type1_img" src="res/xy.png"/>')
+            .append(
+                $('<p>You will have to choose:<ul><li>Which column <img src="res/x_node.png"> will define the first type of nodes</li><li>Which column <img src="res/y_node.png"> will define the second type of nodes</li></ul></p>')
+            )
+
         nodesColumn1_build("#buildUI_result");
         
     } else if($("#typeOfGraph").val() == "citation"){
-        $("#network_type1_img").attr("src", "res/xyx_disabled.png");
-        $("#network_type2_img").attr("src", "res/xy_disabled.png");
-        $("#network_type3_img").attr("src", "res/xx.png");
-        $("#network_type4_img").attr("src", "res/x_disabled.png");
+        $('#typeOfGraph_img').html('<img id="network_type1_img" src="res/xx.png"/>')
+            .append(
+                $('<p>You will have to choose:<ul><li>Which column <img src="res/x_node.png"> contains the identifiers of the nodes</li><li>Which column <img src="res/edge.png"> contains the identifiers of the cited nodes</li></ul></p>')
+            )
+
         nodesColumn_build("#buildUI_result");
             
     } else if($("#typeOfGraph").val() == "table"){
-        $("#network_type1_img").attr("src", "res/xyx_disabled.png");
-        $("#network_type2_img").attr("src", "res/xy_disabled.png");
-        $("#network_type3_img").attr("src", "res/xx_disabled.png");
-        $("#network_type4_img").attr("src", "res/x.png");
+        $('#typeOfGraph_img').html('<img id="network_type1_img" src="res/x.png"/>')
+            .append(
+                $('<p>You will have to choose:<ul><li>Which column <img src="res/x_node.png"> defines the nodes</li></ul></p>')
+            )
+
         nodesColumn_build("#buildUI_result");
             
     } else {
-        $("#buildUI_result").html('<i>This option is not supported yet.</i>');
+        $("#buildUI_result").html('<div class="alert"><strong>Warning!</strong> This option is not supported yet.</div>');
     }
     $("#submitButton").hide();
 }
