@@ -6,6 +6,8 @@
 
 <script src="js/libs/bootstrap.min.js"></script>
 
+<script src="js/libs/select2.min.js"></script>
+
 <script src="js/libs/d3.v2.min.js"></script>
 <!-- <script src="js/libs/d3.min.js"></script> -->
 <!-- <script src="js/libs/d3.chart.min.js"></script> -->

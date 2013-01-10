@@ -221,6 +221,10 @@ function nodesColumn_build(parentId){
                     .append($('<option value="space">Space-separated " "</option>'))
                     .append($('<option value="pipe">Pipe-separated "|"</option>'))
                     .on('change', nodesColumn_set)
+            ).append(
+                $('<div class="row"/>').append(
+                    $('<div class="span6"  id="nodesColumn_example"/>')
+                )
             )
         ).append(
             $('<div class="span6"/>').append(
@@ -236,14 +240,51 @@ function nodesColumn_build(parentId){
             )
         )
     ).append(
+        $('<div class="row"/>').css('margin-top', '20px').append(
+            $('<div class="span12"/>').append(
+                $('<h4><img src="res/x_node.png"> Do you want nodes attributes?</h4>')
+            )
+        )
+    ).append(
         $('<div class="row"/>').append(
-            $('<div class="span6"  id="nodesColumn_example"/>')
+            $('<div class="span6"/>').append(
+                $('<a style="width:100%;" id="nodes_metadata"> </a>')
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'You may transfer the content of some columns to the network as attributes of the nodes. '
+                    +'This feature is only useful under certain circumstances, when the attribute columns actually qualify the node column. '
+                    +'Else, it is possible (and probable) that multiple attributes correspond to a single node. If this happens, the multiple values will be concatenated with the | separator (pipe). '
+                )
+            ).append(
+                $('<p class="text-info"/>').html(
+                    '<strong>Warning: </strong>Adding metadata may cause a memory overload (a browser crash, not dangerous but you won\'t get any result)'
+                )
+            )
         )
     ).append(
         $('<div class="row"/>').append(
             $('<div class="span12" id="nodesColumn_result"/>')
         )
     )
+
+    // Deal with metadata selector
+    $("#nodes_metadata").select2({
+        query: function (query) {
+            var data = {results: []}, i, j, s
+            
+            table[0].forEach(function(colname){
+                if(colname.toLowerCase().match(query.term.toLowerCase()))
+                    data.results.push({id: colname, text: colname});
+            })
+            query.callback(data);
+        },
+        multiple:true,
+        placeholder: "Select one or several columns",
+        allowClear: true
+    })
+    //$("#nodes_metadata").on("change", function(e){})
 }
 
 function nodesColumn_example(){
@@ -627,8 +668,8 @@ function linksCategory_set(){
     $("#submitButton").hide();
 }*/
 
-// TODO
-function nodesMetadata_build(parentId){
+// TO BE REMOVED
+/*function nodesMetadata_build(parentId){
     $(parentId).html('<img src="res/x_node.png"> <b>Select metadata to export with nodes</b><br/>'
         +'<i><b>Warning: </b>Adding metadata may cause a memory overload (a browser crash, not dangerous but you won\'t get any result)</i><br/>'
         +'<div class="metadata_check">'
@@ -638,17 +679,17 @@ function nodesMetadata_build(parentId){
         +'</div>'
         +'<button onclick="nodesMetadata_set()">OK</button>'
         +'</select><br/><br/><div id="nodesMetadata_result"></div>');
-}
+}*/
 
-// TODO
-function nodesMetadata_set(){
+// TO BE REMOVED
+/*function nodesMetadata_set(){
     if($("#typeOfGraph").val() == "table"){
         temporality_build("#nodesMetadata_result");
     } else {
         linksMetadata_build("#nodesMetadata_result");
     }
     $("#submitButton").hide();
-}
+}*/
 
 // TODO
 function linksMetadata_build(parentId){
