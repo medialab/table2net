@@ -263,11 +263,30 @@ function buildUI_set(){
 }
 
 function nodesColumn_build(parentId){
-    $(parentId).html('<img src="res/x_node.png"> <b>Which are the nodes?</b><br/>'
-        +'<select id="nodesCategory" onchange="nodesColumn_set()">'
-        +'<option value="none">Choose a column...</option>'
-        +table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}).join("")
-        +'</select><br/><br/><div id="nodesColumn_result"></div>');
+    $(parentId).append(
+        $('<hr/><h2>2. Nodes</h2>')
+    ).append(
+        $('<h4><img src="res/x_node.png"> Which column defines the nodes?</h4>')
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<select id="nodesCategory" class="span6"/>')
+                    .append($('<option value="none">Choose a column...</option>'))
+                    .append(table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}))
+                    .on('change', nodesColumn_set)
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'The expressions in this column will define the nodes. Some cleaning will be applied (unnecessary spaces, upper case...)'
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span12" id="nodesColumn_result"/>')
+        )
+    )
 }
 
 function nodesColumn1_build(parentId){
