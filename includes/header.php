@@ -1,1 +1,0 @@
-<a href="index.php"><img src="res/header.png"/></a>

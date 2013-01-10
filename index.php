@@ -42,20 +42,6 @@
                         <ul class="nav">
                             <!--<li class="active"><a href="#">Gaga</a></li>-->
                             <!-- <li><a href="#x">xxx</a></li> -->
-                            <!--
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">Action</a></li>
-                                    <li><a href="#">Another action</a></li>
-                                    <li><a href="#">Something else here</a></li>
-                                    <li class="divider"></li>
-                                    <li class="nav-header">Nav header</li>
-                                    <li><a href="#">Separated link</a></li>
-                                    <li><a href="#">One more separated link</a></li>
-                                </ul>
-                            </li>
-                            -->
                         </ul>
 
                        <div class="pull-right">
@@ -63,13 +49,6 @@
                                 <li><a href="http://tools.medialab.sciences-po.fr"><i class="icon icon-plus icon-white"></i> <span style="color: #FFF">Médialab Tools</span></a></li>
                             </ul>
                         </div>
-
-                        <!-- <form class="navbar-form pull-right">
-                            <input class="span2" type="text" placeholder="Email">
-                            <input class="span2" type="password" placeholder="Password">
-                            <button type="submit" class="btn">Sign in</button>
-                        </form>
-                         -->
                     </div><!--/.nav-collapse -->
                 </div>
             </div>
@@ -84,7 +63,7 @@
             <div class="splash-unit row">
                 <div class="span7">
                     <div class="image">
-                        <a href="index.php"><img src="res/header.png"/></a>
+                        <!-- <a href="index.php"><img src="res/header.png"/></a> -->
                     </div>
                     <div class="title">
                         Table 2 Net
@@ -92,16 +71,36 @@
                 </div>
                 <div class="span5">
                     <div class="abstract">
-                        <p><strong>Helpers for scientometrics.</strong> Convert files, get networks, visualize stuff from Scopus or Web of Science.</p>
+                        <p><strong>Extract a network from a table.</strong> Set a column for nodes and a column for edges. It deals with multiple items per cell.</p>
                     </div>
                 </div>
             </div>
 
             <div class="row">
-                <div class="span4">
-                    
+                <div class="span12">
+                    <h2>Load your CSV table</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span12">
+                    <div id="csvloader" style="height: 50px">
+                        <div class="input">
+                            <input type="file" name="file" id='csvloader_input'/>
+                            <span class="help-block">Note: you can drag and drop a file</span>
+                        </div>
+                        <div class="progress" style="display: none;">
+                            <div class="bar" style="width: 0%;"></div>
+                        </div>
+                        <div class="alert" style="display: none;">
+                        </div>
+                    </div>
+                    <div id="UI"></div>
+                
 
                 </div>
+            </div>
+            <div>
+                <button hidden="true" id="submitButton" style="width: 200px; height: 30px;">Download</button>
             </div>
             
         </div>
@@ -110,5 +109,8 @@
 
         <?php include("includes/footcontent.php"); ?>
 
+        <script>
+            document.getElementById('csvloader_input').addEventListener('change', fileLoader.handleFileSelect, false);
+        </script>
     </body>
 </html>

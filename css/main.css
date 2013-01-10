@@ -5,6 +5,17 @@
    ========================================================================== */
 
 /* --------------------------
+   Data preview table
+   -------------------------- */
+#dataPreview{
+  width: 100%;
+  height: 300px;
+  border: 1px solid #EAEAEA;
+  overflow:scroll;
+}
+
+
+/* --------------------------
    Mini-logos on the top-right of the navbar
    -------------------------- */
 .navbar .minilogo{
