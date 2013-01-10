@@ -212,17 +212,7 @@ function nodesColumn_build(parentId){
                     .append($('<option value="none">Choose a column...</option>'))
                     .append(table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}))
                     .on('change', nodesColumn_set)
-            )
-        ).append(
-            $('<div class="span6"/>').append(
-                $('<p class="text-info"/>').html(
-                    'The expressions in this column will define the nodes. Some cleaning will be applied (unnecessary spaces, upper case...)'
-                )
-            )
-        )
-    ).append(
-        $('<div class="row"/>').append(
-            $('<div class="span6"/>').append(
+            ).append(
                 $('<select id="nodesMultipleSeparator" class="span6"/>')
                     .append($('<option value="nomultiples">One expression per cell</option>'))
                     .append($('<option value="coma">Comma-separated ","</option>'))
@@ -234,6 +224,10 @@ function nodesColumn_build(parentId){
             )
         ).append(
             $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'The expressions in this column will define the nodes. Some cleaning will be applied (unnecessary spaces, upper case...)'
+                )
+            ).append(
                 $('<p class="text-info"/>').html(
                     '<strong>If you have multiple items per cell, specify the separator</strong>. '
                     +'For instance you have a list of papers, you want a graph of authors, and the cells look like this: "Enstein; Erdös; Bacon". '
@@ -496,7 +490,6 @@ function multipleCitationLinksPerCell_set(){
     $("#submitButton").hide();
 }
 
-// TODO - WIP
 function linksCategory_build(parentId){
     $(parentId).html('').append(
         $('<hr/><h2>3. Links</h2>')
@@ -509,18 +502,7 @@ function linksCategory_build(parentId){
                     .append($('<option value="none">Choose a column...</option>'))
                     .append(table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}))
                     .on('change', linksCategory_set)
-            )
-        ).append(
-            $('<div class="span6"/>').append(
-                $('<p class="text-info"/>').html(
-                    'The expressions in this column will define the links. Some cleaning will be applied (unnecessary spaces, upper case...) '
-                    +'Two nodes will be linked when they have an item in common in this column.'
-                )
-            )
-        )
-    ).append(
-        $('<div class="row"/>').append(
-            $('<div class="span6"/>').append(
+            ).append(
                 $('<select id="edgesMultipleSeparator" class="span6"/>')
                     .append($('<option value="nomultiples">One expression per cell</option>'))
                     .append($('<option value="coma">Comma-separated ","</option>'))
@@ -532,6 +514,11 @@ function linksCategory_build(parentId){
             )
         ).append(
             $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'The expressions in this column will define the links. Some cleaning will be applied (unnecessary spaces, upper case...) '
+                    +'Two nodes will be linked when they have an item in common in this column.'
+                )
+            ).append(
                 $('<p class="text-info"/>').html(
                     '<strong>If you have multiple items per cell, specify the separator</strong>. '
                 )
