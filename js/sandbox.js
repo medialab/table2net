@@ -556,8 +556,9 @@ function linksCategory_build(parentId){
         ).append(
             $('<div class="span6"/>').append(
                 $('<p class="text-info"/>').html(
-                    'The expressions in this column will define the links. Some cleaning will be applied (unnecessary spaces, upper case...) '
-                    +'Two nodes will be linked when they have an item in common in this column.'
+                    'The expressions in this column will define the links. '
+                    +'<strong>Two nodes will be linked when they have an item in common in this column.</strong> '
+                    +' Some cleaning will be applied (unnecessary spaces, upper case...) '
                 )
             ).append(
                 $('<p class="text-info"/>').html(
@@ -570,10 +571,50 @@ function linksCategory_build(parentId){
             $('<div class="span6"  id="linksCategory_example"/>')
         )
     ).append(
+        $('<div class="row"/>').css('margin-top', '20px').append(
+            $('<div class="span12"/>').append(
+                $('<h4><img src="res/x_node.png"> Do you want links attributes?</h4>')
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<a style="width:100%;" id="links_metadata"> </a>')
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'You may transfer the content of some columns to the network as attributes of the links. '
+                    +'This feature is only useful under certain circumstances, when the attribute columns actually qualify the links column. '
+                    +'In case of multiple values, they will be concatenated with the | separator (pipe). '
+                )
+            ).append(
+                $('<p class="text-info"/>').html(
+                    '<strong>Warning: </strong>Adding metadata may cause a memory overload (a browser crash, not dangerous but you won\'t get any result)'
+                )
+            )
+        )
+    ).append(
         $('<div class="row"/>').append(
             $('<div class="span12" id="linksCategory_result"/>')
         )
     )
+
+    // Deal with metadata selector
+    $("#links_metadata").select2({
+        query: function (query) {
+            var data = {results: []}, i, j, s
+            
+            table[0].forEach(function(colname){
+                if(colname.toLowerCase().match(query.term.toLowerCase()))
+                    data.results.push({id: colname, text: colname});
+            })
+            query.callback(data);
+        },
+        multiple:true,
+        placeholder: "Select one or several columns",
+        allowClear: true
+    })
 }
 
 function linksCategory_example(){
