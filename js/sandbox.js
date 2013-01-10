@@ -284,11 +284,88 @@ function nodesColumn_build(parentId){
         )
     ).append(
         $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<select id="nodesMultipleSeparator" class="span6"/>')
+                    .append($('<option value="nomultiples">One expression per cell</option>'))
+                    .append($('<option value="coma">Comma-separated ","</option>'))
+                    .append($('<option value="semicolon">Semicolon-separated ";"</option>'))
+                    .append($('<option value="dash">Dash-separated "-"</option>'))
+                    .append($('<option value="space">Space-separated " "</option>'))
+                    .append($('<option value="pipe">Pipe-separated "|"</option>'))
+                    .on('change', nodesColumn_set)
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    '<strong>If you have multiple items per cell, specify the separator</strong>. '
+                    +'For instance you have a list of papers, you want a graph of authors, and the cells look like this: "Enstein; Erdös; Bacon". '
+                    +'You have multiple authors per cell. Then you have to set the separator, here the semicolon ";".'
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"  id="nodesColumn_example"/>')
+        )
+    ).append(
+        $('<div class="row"/>').append(
             $('<div class="span12" id="nodesColumn_result"/>')
         )
     )
 }
+function nodesColumn_example(){
+    // Fetch some examples
+    var nodesSamples = []
+        ,threshold = 5
+    while(nodesSamples.length<threshold){
+        var line = 1 + Math.floor( Math.random() * ( table.length - 1 ) )
+            ,cell = table[line][+$('#nodesCategory').val()]
+            ,separator
+            ,expressions
+        switch ($("#nodesMultipleSeparator").val()){
+            case 'coma':
+                separator = ','
+                break
+            case 'semicolon':
+                separator = ';'
+                break
+            case 'dash':
+                separator = '-'
+                break
+            case 'space':
+                separator = ' '
+                break
+            case 'pipe':
+                separator = '|'
+                break
+        }
+        if($("#nodesMultipleSeparator").val() != 'none')
+            expressions = cell.split(separator)
+        else
+            expressions = [cell]
+        expressions.map(function(d){
+            return clean_expression(d)
+        }).filter(function(d, i){
+            return d.node != ""
+        }).forEach(function(d){
+            nodesSamples.push(d)
+        })
+    }
+    nodesSamples = nodesSamples.filter(function(d,i){return i<threshold})
 
+    // Display
+    $('#nodesColumn_example').html('').append(
+        $('<p/>').html('<strong>Sample of nodes</strong> extracted with these settings:').append(
+            $('<button class="btn btn-link">(<i class="icon-refresh"/> sample)</button>').click(nodesColumn_example)
+        )
+    ).append(
+        $('<p/>').append(
+            nodesSamples.map(function(expression){return $('<span class="label label-info"/>').text(expression).after($('<span> </span>'))})
+        )
+    )
+}
+
+// TODO
 function nodesColumn1_build(parentId){
     $(parentId).html('<img src="res/x_node.png"> <b>Which is the first type of nodes?</b><br/>'
         +'<select id="nodesCategory1" onchange="nodesColumn1_set()">'
@@ -299,6 +376,7 @@ function nodesColumn1_build(parentId){
         +'<br/><br/><div id="nodesColumn1_result"></div>');
 }
 
+// TODO
 function nodesColumn1_set(){
     if($("#nodesCategory1").val() == "none"){
         $("#nodesColumn1_result").html('');
@@ -308,6 +386,7 @@ function nodesColumn1_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function multipleNodesPerCell1_build(parentId){
     $(parentId).html('<img src="res/x_node.png"> <b>Multiple nodes per cell? (type 1)</b><br/>'
         +'<select id="nodesMultipleSeparator1" onchange="multipleNodesPerCell1_set()">'
@@ -323,6 +402,7 @@ function multipleNodesPerCell1_build(parentId){
         +'<br/><br/><div id="multipleNodesPerCell1_result"></div>');
 }
 
+// TODO
 function multipleNodesPerCell1_set(){
     if($("#nodesMultipleSeparator1").val() == "none"){
         $("#multipleNodesPerCell1_result").html('');
@@ -332,6 +412,7 @@ function multipleNodesPerCell1_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function nodesColumn2_build(parentId){
     var nodesColumnId1 = $("#nodesCategory1").val();
     $(parentId).html('<img src="res/y_node.png"> <b>Which is the second type of nodes?</b><br/>'
@@ -348,6 +429,7 @@ function nodesColumn2_build(parentId){
         +'<br/><br/><div id="nodesColumn2_result"></div>');
 }
 
+// TODO
 function nodesColumn2_set(){
     if($("#nodesCategory2").val() == "none"){
         $("#nodesColumn2_result").html('');
@@ -357,6 +439,7 @@ function nodesColumn2_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function multipleNodesPerCell2_build(parentId){
     $(parentId).html('<img src="res/y_node.png"> <b>Multiple nodes per cell? (type 2)</b><br/>'
         +'<select id="nodesMultipleSeparator2" onchange="multipleNodesPerCell2_set()">'
@@ -371,6 +454,7 @@ function multipleNodesPerCell2_build(parentId){
         +'<br/><br/><div id="multipleNodesPerCell2_result"></div>');
 }
 
+// TODO
 function multipleNodesPerCell2_set(){
     if($("#linksMultipleSeparator2").val() == "none"){
         $("#multipleNodesPerCell2_result").html('');
@@ -382,14 +466,18 @@ function multipleNodesPerCell2_set(){
 
 function nodesColumn_set(){
     if($("#nodesCategory").val() == "none"){
-        $("#nodesColumn_result").html('');
+        $("#nodesColumn_result").html('')
+        $("#nodesColumn_example").html('')
     } else {
-        multipleNodesPerCell_build("#nodesColumn_result");
+        nodesColumn_example()
+        linksCategory_build("#nodesColumn_result")
     }
-    $("#submitButton").hide();
+    $("#submitButton").hide()
 }
 
-function multipleNodesPerCell_build(parentId){
+// TO BE REMOVED
+/*function multipleNodesPerCell_build(parentId){
+
     $(parentId).html('<img src="res/x_node.png"> <b>Multiple nodes per cell?</b><br/>'
         +'<select id="nodesMultipleSeparator" onchange="multipleNodesPerCell_set()">'
         +'<option value="none">Choose a separator...</option>'
@@ -403,9 +491,10 @@ function multipleNodesPerCell_build(parentId){
         +'<br/><i>Example:<br/>Your data is a list of papers and you want a <b>graph of authors</b>. Each paper may have several authors, and the author cell in your csv file looks like a list: "Enstein; Erdös; Bacon".<br/>Then you have to define the separator (here, the semicolon ";").</i><br/>'
         +'<br/><br/><div id="multipleNodesPerCell_result"></div>'
         );
-}
+}*/
 
-function multipleNodesPerCell_set(){
+// TO BE REMOVED
+/*function multipleNodesPerCell_set(){
     if($("#nodesMultipleSeparator").val() == "none"){
         $("#multipleNodesPerCell_result").html('');
     } else {
@@ -420,8 +509,9 @@ function multipleNodesPerCell_set(){
         }
     }
     $("#submitButton").hide();
-}
+}*/
 
+// TODO
 function citationLinkCategory_build(parentId){
     $(parentId).html('<img src="res/edge.png"> <b>Which are the citation links?</b><br/>'
         +'<select id="citationLinksCategory" onchange="citationLinksCategory_set()">'
@@ -430,6 +520,7 @@ function citationLinkCategory_build(parentId){
         +'</select><br/><br/><div id="citationLinksCategory_result"></div>');
 }
 
+// TODO
 function citationLinksCategory_set(){
     if($("#citationLinksCategory").val() == "none"){
         $("#citationLinksCategory_result").html('');
@@ -441,6 +532,7 @@ function citationLinksCategory_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function multipleCitationLinksPerCell_build(parentId){
     $(parentId).html('<img src="res/edge.png"> <b>Multiple citation links per cell?</b><br/>'
         +'<select id="citationLinksMultipleSeparator" onchange="multipleCitationLinksPerCell_set()">'
@@ -455,6 +547,7 @@ function multipleCitationLinksPerCell_build(parentId){
         +'<br/><br/><div id="multipleCitationLinksPerCell_result"></div>');
 }
 
+// TODO
 function multipleCitationLinksPerCell_set(){
     if($("#citationLinksMultipleSeparator").val() == "none"){
         $("#multipleCitationLinksPerCell_result").html('');
@@ -464,6 +557,7 @@ function multipleCitationLinksPerCell_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function linksCategory_build(parentId){
     $(parentId).html('<img src="res/y_edge.png"> <b>Which are the links?</b><br/>'
         +'<select id="linksCategory" onchange="linksCategory_set()">'
@@ -472,6 +566,7 @@ function linksCategory_build(parentId){
         +'</select><br/><br/><div id="linksCategory_result"></div>');
 }
 
+// TODO
 function linksCategory_set(){
     if($("#linksCategory").val() == "none"){
         $("#linksCategory_result").html('');
@@ -483,6 +578,7 @@ function linksCategory_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function multipleLinksPerCell_build(parentId){
     $(parentId).html('<img src="res/y_edge.png"> <b>Multiple links per cell?</b><br/>'
         +'<select id="linksMultipleSeparator" onchange="multipleLinksPerCell_set()">'
@@ -498,6 +594,7 @@ function multipleLinksPerCell_build(parentId){
         +'<br/><br/><div id="multipleLinksPerCell_result"></div>');
 }
 
+// TODO
 function multipleLinksPerCell_set(){
     if($("#linksMultipleSeparator").val() == "none"){
         $("#multipleLinksPerCell_result").html('');
@@ -507,6 +604,7 @@ function multipleLinksPerCell_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function nodesMetadata_build(parentId){
     $(parentId).html('<img src="res/x_node.png"> <b>Select metadata to export with nodes</b><br/>'
         +'<i><b>Warning: </b>Adding metadata may cause a memory overload (a browser crash, not dangerous but you won\'t get any result)</i><br/>'
@@ -519,6 +617,7 @@ function nodesMetadata_build(parentId){
         +'</select><br/><br/><div id="nodesMetadata_result"></div>');
 }
 
+// TODO
 function nodesMetadata_set(){
     if($("#typeOfGraph").val() == "table"){
         temporality_build("#nodesMetadata_result");
@@ -528,6 +627,7 @@ function nodesMetadata_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function linksMetadata_build(parentId){
     var icon = '';
     if($("#typeOfGraph").val() == "mono"){
@@ -544,11 +644,13 @@ function linksMetadata_build(parentId){
         +'</select><br/><br/><div id="linksMetadata_result"></div>');
 }
 
+// TODO
 function linksMetadata_set(){
     temporality_build("#linksMetadata_result");
     $("#submitButton").hide();
 }
 
+// TODO
 function temporality_build(parentId){
     $(parentId).html('<b>Temporality</b><br/>'
         +'<select id="temporality" onchange="temporality_set()">'
@@ -558,6 +660,7 @@ function temporality_build(parentId){
         +'</select><br/><br/><div id="temporality_result"></div>');
 }
 
+// TODO
 function temporality_set(){
     if($("#temporality").val() == "none"){
         $("temporality_result").html('Please choose a temporality. If your data do not have one, chose "static".');
@@ -571,6 +674,7 @@ function temporality_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function temporalityColumn_build(parentId){
     $(parentId).html('<b>Temporality Column</b><br/>'
         +'<select id="temporalityCategory" onchange="temporalityColumn_set()">'
@@ -579,6 +683,7 @@ function temporalityColumn_build(parentId){
         +'</select><br/><br/><div id="temporalityColumn_result"></div>');
 }
 
+// TODO
 function temporalityColumn_set(){
     if($("#temporalityCategory").val() == "none"){
         $("#temporalityColumn_result").html('');
@@ -588,6 +693,7 @@ function temporalityColumn_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function edgeWeight_build(parentId){
     $(parentId).html('<b>Edge Weight</b><br/>'
         +'<select id="edgeWeight" onchange="edgeWeight_set()">'
@@ -597,6 +703,7 @@ function edgeWeight_build(parentId){
         +'</select><br/><br/><div id="edgeWeight_result"></div>');
 }
 
+// TODO
 function edgeWeight_set(){
     if($("#edgeWeight").val() == "none"){
         $("#edgeWeight_result").html('');
@@ -606,10 +713,13 @@ function edgeWeight_set(){
     $("#submitButton").hide();
 }
 
+// TODO
 function buildButton_build(parentId){
     $(parentId).html('<b>Build the graph</b><br/>'
         +'<input type="button" onclick="buildGraph()" value="Build" style="width: 200px; height: 30px;"/><br/>NB: this may take a while, please be patient.');
 }
+
+
 
 
 
