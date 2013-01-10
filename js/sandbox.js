@@ -165,7 +165,7 @@ function buildUI_set(){
     } else if($("#typeOfGraph").val() == "mono"){
         $('#typeOfGraph_img').html('<p><img id="network_type1_img" src="res/xyx.png"/></p>')
             .append(
-                $('<p>You will have to choose:<ul><li>Which column <img src="res/x_node.png"> will define the nodes</li><li>Which column <img src="res/y_edge.png"> will define the edges</li></ul></p>')
+                $('<p>You will have to choose:<ul><li>Which column <img src="res/x_node.png"> will define the nodes</li><li>Which column <img src="res/y_edge.png"> will define the links</li></ul></p>')
             )
 
         nodesColumn_build("#buildUI_result");
@@ -573,7 +573,7 @@ function linksCategory_build(parentId){
     ).append(
         $('<div class="row"/>').css('margin-top', '20px').append(
             $('<div class="span12"/>').append(
-                $('<h4><img src="res/x_node.png"> Do you want links attributes?</h4>')
+                $('<h4><img src="res/y_edge.png"> Do you want links attributes?</h4>')
             )
         )
     ).append(
@@ -671,14 +671,15 @@ function linksCategory_example(){
 
 function linksCategory_set(){
     if($("#linksCategory").val() == "none"){
-        $("#linksCategory_result").html('');
-        $("#linksCategory_example").html('');
+        $("#linksCategory_result").html('')
+        $("#linksCategory_example").html('')
     } else if($("#linksCategory").val() == $("#nodesCategory").val()){
         linksCategory_example()
+        $("#linksCategory_example").html('')
         $("#linksCategory_result").html('<div class="alert"><strong>Warning!</strong> You cannot chose the same column for nodes and links.</div>')
     } else {
         linksCategory_example()
-        nodesMetadata_build("#linksCategory_result");
+        additionalsettings_build("#linksCategory_result")
     }
     $("#submitButton").hide();
 }
@@ -732,8 +733,8 @@ function linksCategory_set(){
     $("#submitButton").hide();
 }*/
 
-// TODO
-function linksMetadata_build(parentId){
+// TO BE REMOVED
+/*function linksMetadata_build(parentId){
     var icon = '';
     if($("#typeOfGraph").val() == "mono"){
         icon = '<img src="res/y_edge.png">'
@@ -748,55 +749,81 @@ function linksMetadata_build(parentId){
         +'<button onclick="linksMetadata_set()">OK</button>'
         +'</select><br/><br/><div id="linksMetadata_result"></div>');
 }
+*/
 
-// TODO
-function linksMetadata_set(){
+// TO BE REMOVED
+/*function linksMetadata_set(){
     temporality_build("#linksMetadata_result");
     $("#submitButton").hide();
 }
+*/
 
-// TODO
-function temporality_build(parentId){
-    $(parentId).html('<b>Temporality</b><br/>'
-        +'<select id="temporality" onchange="temporality_set()">'
-        +'<option value="none">Choose temporality...</option>'
-        +'<option value="static">None (static data)</option>'
-        +'<option value="year">Year by year</option>'
-        +'</select><br/><br/><div id="temporality_result"></div>');
+// WIP
+function additionalsettings_build(parentId){
+    $(parentId).html('').append(
+        $('<hr/><h2>4. Optional settings</h2>')
+    ).append(
+        $('<h4>Optionnal: time series</h4>')
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<select id="temporality" class="span6"/>')
+                    .append($('<option value="none">No temporal data</option>'))
+                    .append(table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}))
+                    .on('change', linksCategory_set)
+            ).append(
+                $('<span class="help-block">Select only a column containing <strong>integers</strong>.</span>')
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'You may select an attribute a column describing time. '
+                    +'<strong>It will only work if it contains integers</strong> (1, 2, 3...), and thus typically works with <strong>years</strong>. '
+                    +'It does not handle full dates. '
+                )
+            )
+        )
+    ).append(
+        $('<h4>Optionnal: edge weight</h4>')
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<select id="edgeWeight" class="span6"/>')
+                    .append($('<option value="false" selected="true">No weight</option>'))
+                    .append($('<option value="true">Weight the edges</option>'))
+                    //.on('change', linksCategory_set)
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'gaga '
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span12"/>').append(
+                $('<hr/><h2>5. Build the network</h2>')
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<button value="Build" class="btn btn-block btn-primary">Build the network</button>')
+                    .click(buildGraph)
+            ).append(
+                $('<span class="help-block"/>').text('NB: this may take a while, please be patient.')
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'After building the network, you will be able to download it. '
+                )
+            )
+        )
+    )
 }
 
-// TODO
-function temporality_set(){
-    if($("#temporality").val() == "none"){
-        $("temporality_result").html('Please choose a temporality. If your data do not have one, chose "static".');
-    } else if($("#temporality").val() == "static"){
-        edgeWeight_build("#temporality_result");
-    } else if($("#temporality").val() == "year"){
-        temporalityColumn_build("#temporality_result");
-    } else {
-        $("temporality_result").html('This option is not yet supported.');
-    }
-    $("#submitButton").hide();
-}
-
-// TODO
-function temporalityColumn_build(parentId){
-    $(parentId).html('<b>Temporality Column</b><br/>'
-        +'<select id="temporalityCategory" onchange="temporalityColumn_set()">'
-        +'<option value="none">Choose...</option>'
-        +table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}).join("")
-        +'</select><br/><br/><div id="temporalityColumn_result"></div>');
-}
-
-// TODO
-function temporalityColumn_set(){
-    if($("#temporalityCategory").val() == "none"){
-        $("#temporalityColumn_result").html('');
-    } else {
-        buildButton_build("#temporalityColumn_result");
-    }
-    $("#submitButton").hide();
-}
 
 // TODO
 function edgeWeight_build(parentId){
