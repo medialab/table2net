@@ -2,78 +2,7 @@ var table,
     tableHeader;
 var nodes;
 var links;
-    
-/*var fileLoader = {
-    reader:undefined,
-    abortRead:function(){
-        fileLoader.reader.abort();
-    },
-    errorHandler:function(evt){
-        switch(evt.target.error.code) {
-            case evt.target.error.NOT_FOUND_ERR:
-                alert('File Not Found!');
-                break;
-            case evt.target.error.NOT_READABLE_ERR:
-                alert('File is not readable');
-                break;
-            case evt.target.error.ABORT_ERR:
-                break; // noop
-            default:
-                alert('An error occurred reading this file.');
-        };
-    },
-    updateProgress:function(evt){
-        // evt is an ProgressEvent.
-        if (evt.lengthComputable) {
-            var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-            // Increase the progress bar length.
-            if (percentLoaded < 100) {
-                var progress = document.querySelector('.percent');
-                progress.style.width = percentLoaded + '%';
-                progress.textContent = percentLoaded + '%';
-            }
-        }
-    },
-    handleFileSelect: function(evt) {
-        // Reset progress indicator on new file selection.
-        var progress = document.querySelector('.percent');
-        progress.style.width = '0%';
-        progress.textContent = '0%';
-        
-        fileLoader.reader = new FileReader();
-        fileLoader.reader.onerror = fileLoader.errorHandler;
-        fileLoader.reader.onprogress = fileLoader.updateProgress;
-        fileLoader.reader.onabort = function(e) {
-            alert('File read cancelled');
-        };
-        fileLoader.reader.onloadstart = function(e) {
-            $("#progress_bar").addClass("loading");
-            $("#progress_bar_message").removeClass("fail_message");
-            $("#progress_bar_message").removeClass("success_message");
-            document.getElementById('progress_bar').className = 'loading';
-        };
-        fileLoader.reader.onload = function(e) {
-            // Ensure that the progress bar displays 100% at the end.
-            var progress = document.querySelector('.percent');
-            progress.style.width = '100%';
-            progress.textContent = 'Reading: 100% - Now parsing...';
-            setTimeout("fileLoader.finalize();", 2000);
-        }
-        
-        fileLoader.reader.readAsText(evt.target.files[0]);
-    },
-    
-    finalize: function(){
-        table = d3.csv.parseRows(fileLoader.reader.result);
-        
-        $("#progress_bar_message").addClass("success_message");
-        $("#progress_bar_message").html(table[0].length+" columns and "+table.length+" rows.");
-        $("#validation").addClass("open");
-        setTimeout('$("#progress_bar").removeClass("loading");', 2000);
-        
-        buildUI();
-    }
-}*/
+
 var fileLoader = {
     reader:undefined,
     abortRead:function(){
@@ -137,7 +66,16 @@ var fileLoader = {
     finalize: function(id){
         switch(id){
             case 'csvloader':
-                table = d3.csv.parseRows(fileLoader.reader.result);
+                table = d3.csv.parseRows(fileLoader.reader.result)
+
+                // Add the row number to the table
+                table.forEach(function(row, i){
+                    if(i==0)
+                        row.unshift('Row number')
+                    else
+                       row.unshift(''+i)
+                })
+
                 $('#'+id+' .progress').hide()
                 $('#'+id+' .alert').addClass('alert-success')
                 $('#'+id+' .alert').html('Parsing successful. '+table[0].length+' columns and '+table.length+' rows. <button type="button" class="close" data-dismiss="alert">&times;</button>')
@@ -257,13 +195,13 @@ function buildUI_set(){
         nodesColumn_build("#buildUI_result");
             
     } else {
-        $("#buildUI_result").html('<div class="alert"><strong>Warning!</strong> This option is not supported yet.</div>');
+        $("#buildUI_result").html('<div class="alert"><strong>Warning!</strong> This option is not supported yet.</div>')
     }
     $("#submitButton").hide();
 }
 
 function nodesColumn_build(parentId){
-    $(parentId).append(
+    $(parentId).html('').append(
         $('<hr/><h2>2. Nodes</h2>')
     ).append(
         $('<h4><img src="res/x_node.png"> Which column defines the nodes?</h4>')
@@ -313,6 +251,7 @@ function nodesColumn_build(parentId){
         )
     )
 }
+
 function nodesColumn_example(){
     // Fetch some examples
     var nodesSamples = []
@@ -346,7 +285,7 @@ function nodesColumn_example(){
         expressions.map(function(d){
             return clean_expression(d)
         }).filter(function(d, i){
-            return d.node != ""
+            return d != ""
         }).forEach(function(d){
             nodesSamples.push(d)
         })
@@ -557,29 +496,126 @@ function multipleCitationLinksPerCell_set(){
     $("#submitButton").hide();
 }
 
-// TODO
+// TODO - WIP
 function linksCategory_build(parentId){
-    $(parentId).html('<img src="res/y_edge.png"> <b>Which are the links?</b><br/>'
-        +'<select id="linksCategory" onchange="linksCategory_set()">'
-        +'<option value="none">Choose a column...</option>'
-        +table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}).concat()
-        +'</select><br/><br/><div id="linksCategory_result"></div>');
+    $(parentId).html('').append(
+        $('<hr/><h2>3. Links</h2>')
+    ).append(
+        $('<h4><img src="res/y_edge.png"> Which column defines the links?</h4>')
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<select id="linksCategory" class="span6"/>')
+                    .append($('<option value="none">Choose a column...</option>'))
+                    .append(table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}))
+                    .on('change', linksCategory_set)
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'The expressions in this column will define the links. Some cleaning will be applied (unnecessary spaces, upper case...) '
+                    +'Two nodes will be linked when they have an item in common in this column.'
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<select id="edgesMultipleSeparator" class="span6"/>')
+                    .append($('<option value="nomultiples">One expression per cell</option>'))
+                    .append($('<option value="coma">Comma-separated ","</option>'))
+                    .append($('<option value="semicolon">Semicolon-separated ";"</option>'))
+                    .append($('<option value="dash">Dash-separated "-"</option>'))
+                    .append($('<option value="space">Space-separated " "</option>'))
+                    .append($('<option value="pipe">Pipe-separated "|"</option>'))
+                    .on('change', linksCategory_set)
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    '<strong>If you have multiple items per cell, specify the separator</strong>. '
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"  id="linksCategory_example"/>')
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span12" id="linksCategory_result"/>')
+        )
+    )
 }
 
-// TODO
+function linksCategory_example(){
+    // Fetch some examples
+    var nodesSamples = []
+        ,threshold = 5
+    while(nodesSamples.length<threshold){
+        var line = 1 + Math.floor( Math.random() * ( table.length - 1 ) )
+            ,cell = table[line][+$('#linksCategory').val()]
+            ,separator
+            ,expressions
+        switch ($("#edgesMultipleSeparator").val()){
+            case 'coma':
+                separator = ','
+                break
+            case 'semicolon':
+                separator = ';'
+                break
+            case 'dash':
+                separator = '-'
+                break
+            case 'space':
+                separator = ' '
+                break
+            case 'pipe':
+                separator = '|'
+                break
+        }
+        if($("#edgesMultipleSeparator").val() != 'none')
+            expressions = cell.split(separator)
+        else
+            expressions = [cell]
+        expressions.map(function(d){
+            return clean_expression(d)
+        }).filter(function(d, i){
+            return d != ""
+        }).forEach(function(d){
+            nodesSamples.push(d)
+        })
+    }
+    nodesSamples = nodesSamples.filter(function(d,i){return i<threshold})
+
+    // Display
+    $('#linksCategory_example').html('').append(
+        $('<p/>').html('<strong>Sample of items</strong> extracted with these settings:').append(
+            $('<button class="btn btn-link">(<i class="icon-refresh"/> sample)</button>').click(linksCategory_example)
+        )
+    ).append(
+        $('<p/>').append(
+            nodesSamples.map(function(expression){return $('<span class="label label-info"/>').text(expression).after($('<span> </span>'))})
+        )
+    )
+}
+
 function linksCategory_set(){
     if($("#linksCategory").val() == "none"){
         $("#linksCategory_result").html('');
+        $("#linksCategory_example").html('');
     } else if($("#linksCategory").val() == $("#nodesCategory").val()){
-        $("#linksCategory_result").html('You cannot chose the same column for nodes and links.');
+        linksCategory_example()
+        $("#linksCategory_result").html('<div class="alert"><strong>Warning!</strong> You cannot chose the same column for nodes and links.</div>')
     } else {
-        multipleLinksPerCell_build("#linksCategory_result");
+        linksCategory_example()
+        nodesMetadata_build("#linksCategory_result");
     }
     $("#submitButton").hide();
 }
 
-// TODO
-function multipleLinksPerCell_build(parentId){
+// TO BE REMOVED
+/*function multipleLinksPerCell_build(parentId){
     $(parentId).html('<img src="res/y_edge.png"> <b>Multiple links per cell?</b><br/>'
         +'<select id="linksMultipleSeparator" onchange="multipleLinksPerCell_set()">'
         +'<option value="none">Choose a separator...</option>'
@@ -592,17 +628,17 @@ function multipleLinksPerCell_build(parentId){
         +'</select>'
         +'<br/><i>Example:<br/>Your data is a list of papers and you want a graph of papers <b>that share an author</b>. Each paper may have several authors, and the author cell in your csv file looks like a list: "Enstein; Erdös; Bacon".<br/>Then you have to define the separator (here, the semicolon ";").</i><br/>'
         +'<br/><br/><div id="multipleLinksPerCell_result"></div>');
-}
+}*/
 
-// TODO
-function multipleLinksPerCell_set(){
+// TO BE REMOVED
+/*function multipleLinksPerCell_set(){
     if($("#linksMultipleSeparator").val() == "none"){
         $("#multipleLinksPerCell_result").html('');
     } else {
         nodesMetadata_build("#multipleLinksPerCell_result");
     }
     $("#submitButton").hide();
-}
+}*/
 
 // TODO
 function nodesMetadata_build(parentId){
