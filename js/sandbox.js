@@ -274,9 +274,9 @@ function nodesColumn_build(parentId){
         query: function (query) {
             var data = {results: []}, i, j, s
             
-            table[0].forEach(function(colname){
+            table[0].forEach(function(colname, i){
                 if(colname.toLowerCase().match(query.term.toLowerCase()))
-                    data.results.push({id: colname, text: colname});
+                    data.results.push({id: i, text: colname});
             })
             query.callback(data);
         },
@@ -430,9 +430,9 @@ function nodesColumn1_build(parentId){
         query: function (query) {
             var data = {results: []}, i, j, s
             
-            table[0].forEach(function(colname){
+            table[0].forEach(function(colname, i){
                 if(colname.toLowerCase().match(query.term.toLowerCase()))
-                    data.results.push({id: colname, text: colname});
+                    data.results.push({id: i, text: colname});
             })
             query.callback(data);
         },
@@ -574,9 +574,9 @@ function nodesColumn2_build(parentId){
         query: function (query) {
             var data = {results: []}, i, j, s
             
-            table[0].forEach(function(colname){
+            table[0].forEach(function(colname, i){
                 if(colname.toLowerCase().match(query.term.toLowerCase()))
-                    data.results.push({id: colname, text: colname});
+                    data.results.push({id: i, text: colname});
             })
             query.callback(data);
         },
@@ -736,9 +736,9 @@ function citationLinkCategory_build(parentId){
         query: function (query) {
             var data = {results: []}, i, j, s
             
-            table[0].forEach(function(colname){
+            table[0].forEach(function(colname, i){
                 if(colname.toLowerCase().match(query.term.toLowerCase()))
-                    data.results.push({id: colname, text: colname});
+                    data.results.push({id: i, text: colname});
             })
             query.callback(data);
         },
@@ -889,9 +889,9 @@ function linksCategory_build(parentId){
         query: function (query) {
             var data = {results: []}, i, j, s
             
-            table[0].forEach(function(colname){
+            table[0].forEach(function(colname, i){
                 if(colname.toLowerCase().match(query.term.toLowerCase()))
-                    data.results.push({id: colname, text: colname});
+                    data.results.push({id: i, text: colname});
             })
             query.callback(data);
         },
@@ -1604,8 +1604,10 @@ function buildGraph(){
     htmlSummary += "</ul></li>";
     
     // Metadata
-    var nodesExportedColumnIds = $(".nodesMetadata").toArray().filter(function(d){return $(d).attr("checked");}).map(function(d){return $(d).val();}) || [];
-    var linksExportedColumnIds = $(".linksMetadata").toArray().filter(function(d){return $(d).attr("checked");}).map(function(d){return $(d).val();}) || [];
+    var nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
+    var linksExportedColumnIds = $('#links_metadata').val().split(',')
+    // var nodesExportedColumnIds = $(".nodesMetadata").toArray().filter(function(d){return $(d).attr("checked");}).map(function(d){return $(d).val();}) || [];
+    // var linksExportedColumnIds = $(".linksMetadata").toArray().filter(function(d){return $(d).attr("checked");}).map(function(d){return $(d).val();}) || [];
     
     // HTML Summary
     htmlSummary += "<li>Metadata:<ul>";
@@ -1630,9 +1632,15 @@ function buildGraph(){
     htmlSummary += "</ul></li>";
     
     // Temporality
-    var dynMode = $("#temporality").val();
-    var dynColumnId = $("#temporalityCategory").val() || -1;
-    
+    var dynMode, dynColumnId
+    if($("#temporality").val() == 'none'){
+        dynMode = 'none'
+        dynColumnId = -1
+    } else {
+        dynMode = 'year'
+        dynColumnId = +$("#temporality").val()
+    }
+
     // HTML Summary
     htmlSummary += "<li>Temporality: "+dynMode+((dynColumnId>=0)?(", defined by column n° "+dynColumnId+": "+xmlEntities(tableHeader[dynColumnId])+""):(""))+"</li>";
     
@@ -1654,7 +1662,7 @@ function buildGraph(){
     // Nodes Attributes
     bb.append("\n" +  '<attributes class="node" mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
     bb.append("\n" +  '<attribute id="attr_type" title="Type" type="string"></attribute>');
-    bb.append("\n" +  '<attribute id="global_occurrences" title="Global Occurrences Count" type="integer"></attribute>');
+    bb.append("\n" +  '<attribute id="global_occurrences" title="Occurrences Count" type="integer"></attribute>');
     nodesExportedColumnIds.forEach(function(colId){
         bb.append("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>');
     });
@@ -1663,6 +1671,7 @@ function buildGraph(){
     // Edges Attributes
     bb.append("\n" +  '<attributes class="edge" mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
     bb.append("\n" +  '<attribute id="attr_type" title="Type" type="string"></attribute>');
+    bb.append("\n" +  '<attribute id="matchings_count" title="Matchings Count" type="integer"></attribute>');
     linksExportedColumnIds.forEach(function(colId){
         bb.append("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>');
     });
@@ -1773,6 +1782,7 @@ function buildGraph(){
         
         // AttributeValues
         bb.append("\n" +  '<attvalues>');
+        bb.append("\n" +  '<attvalue for="matchings_count" value="'+xmlEntities(d.tableRows.length)+'"></attvalue>');
         bb.append("\n" +  '<attvalue for="attr_type" value="'+xmlEntities(type)+'"></attvalue>');
         
         linksExportedColumnIds.forEach(function(colId){
@@ -1833,6 +1843,7 @@ function buildGraph(){
         saveAs(blob, "Network.gexf");
     });
 }
+
 
 
 // Utilities
