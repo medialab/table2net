@@ -1018,15 +1018,18 @@ function additionalsettings_build(parentId){
     ).append(
         $('<div class="row"/>').append(
             $('<div class="span6"/>').append(
-                $('<button value="Build" class="btn btn-block btn-primary">Build the network</button>')
-                    .click(buildGraph)
-            ).append(
-                $('<span class="help-block"/>').text('NB: this may take a while, please be patient.')
+                $('<div id="build_container"/>').append(
+                    $('<button value="Build" class="btn btn-block btn-primary"><i class="icon-download icon-white"/> Build and download the network (GEXF)</button>')
+                        .click(buildGraph)
+                ).append(
+                    $('<span class="help-block"/>').text('NB: this may take a while, please be patient.')
+                )
             )
         ).append(
             $('<div class="span6"/>').append(
                 $('<p class="text-info"/>').html(
-                    'After building the network, you will be able to download it. '
+                    'After building the network, the download will trigger automatically. '
+                    +'The network file is a <strong>GEXF</strong>, the <a href="http://gephi.org">Gephi</a> file format. '
                 )
             )
         )
@@ -1389,6 +1392,12 @@ function getCitationLinks(nodesColumnId, nodesMultiples, nodesSeparator, linksCo
 
 
 function buildGraph(){
+    // UI: display progress bar
+    $('#build_container').html('<div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div>')
+    setTimeout(buildGraph_, 10)
+}
+
+function buildGraph_(){
     
     var typeOfGraph = $("#typeOfGraph").val();
     var weightEdges = $("#edgeWeight").val() == "true";
@@ -1832,7 +1841,7 @@ function buildGraph(){
     bb.append("\n" +  '</graph></gexf>');
     
     // Finalization
-    htmlSummary += "</ul>";
+    /*htmlSummary += "</ul>";
     $("#UI").html(htmlSummary);
     $("#submitButton").show();
     $("#files").hide();
@@ -1841,7 +1850,15 @@ function buildGraph(){
     $("#submitButton").click(function(){
         var blob = bb.getBlob("text/gexf+xml;charset=utf-8");
         saveAs(blob, "Network.gexf");
-    });
+    });*/
+
+    // Finally, download !
+    nodes = [];
+    links = [];
+    var blob = bb.getBlob("text/gexf+xml;charset=utf-8")
+    saveAs(blob, "Network.gexf")
+    $('#build_container').html('<div class="alert alert-success">GEXF downloaded <button type="button" class="close" data-dismiss="alert">&times;</button></div>')
+
 }
 
 
