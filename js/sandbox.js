@@ -345,7 +345,13 @@ function nodesColumn_set(){
         $("#nodesColumn_example").html('')
     } else {
         nodesColumn_example()
-        linksCategory_build("#nodesColumn_result")
+        if($("#typeOfGraph").val() == "mono"){
+            linksCategory_build("#nodesColumn_result")
+        } else if($("#typeOfGraph").val() == "citation"){
+            citationLinkCategory_build("#nodesColumn_result")
+        } else if($("#typeOfGraph").val() == "table"){
+            nolink_build("#nodesColumn_result")
+        }
     }
     $("#submitButton").hide()
 }
@@ -656,48 +662,155 @@ function nolink_build(parentId){
     additionalsettings_build("#linksCategory_result")
 }
 
-// TODO
 function citationLinkCategory_build(parentId){
-    $(parentId).html('<img src="res/edge.png"> <b>Which are the citation links?</b><br/>'
-        +'<select id="citationLinksCategory" onchange="citationLinksCategory_set()">'
-        +'<option value="none">Choose a column...</option>'
-        +table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}).concat()
-        +'</select><br/><br/><div id="citationLinksCategory_result"></div>');
+    $(parentId).html('').append(
+        $('<hr/><h2>3. Links</h2>')
+    ).append(
+        $('<h4><img src="res/edge.png"> Which column defines the citation links?</h4>')
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<select id="citationLinksCategory" class="span6"/>')
+                    .append($('<option value="none">Choose a column...</option>'))
+                    .append(table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}))
+                    .on('change', citationLinksCategory_set)
+            ).append(
+                $('<select id="citationLinksMultipleSeparator" class="span6"/>')
+                    .append($('<option value="nomultiples">One expression per cell</option>'))
+                    .append($('<option value="coma">Comma-separated ","</option>'))
+                    .append($('<option value="semicolon">Semicolon-separated ";"</option>'))
+                    .append($('<option value="dash">Dash-separated "-"</option>'))
+                    .append($('<option value="space">Space-separated " "</option>'))
+                    .append($('<option value="pipe">Pipe-separated "|"</option>'))
+                    .on('change', citationLinksCategory_set)
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'The expressions in this column will define the citation links. '
+                    +'<strong>The expressions must match the nodes.</strong> '
+                    +'For instance if the nodes are <em>Paper titles</em> then this column must contain paper titles as well. However do not use the same column. The cited papers may have a different column name like <em>References</em>. '
+                )
+            ).append(
+                $('<p class="text-info"/>').html(
+                    '<strong>You certainly have multiple items per cell, please specify the separator</strong>. '
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"  id="citationLinksCategory_example"/>')
+        )
+    ).append(
+        $('<div class="row"/>').css('margin-top', '20px').append(
+            $('<div class="span12"/>').append(
+                $('<h4><img src="res/edge.png"> Do you want attributes for citation links?</h4>')
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<a style="width:100%;" id="citationLinks_metadata"> </a>')
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'You may transfer the content of some columns to the network as attributes of the citation links. '
+                    +'This feature is only useful under certain circumstances, when the attribute columns actually qualify the links column. '
+                    +'In case of multiple values, they will be concatenated with the | separator (pipe). '
+                )
+            ).append(
+                $('<p class="text-info"/>').html(
+                    '<strong>Warning: </strong>Adding metadata may cause a memory overload (a browser crash, not dangerous but you won\'t get any result)'
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span12" id="citationLinksCategory_result"/>')
+        )
+    )
+
+    // Deal with metadata selector
+    $("#citationLinks_metadata").select2({
+        query: function (query) {
+            var data = {results: []}, i, j, s
+            
+            table[0].forEach(function(colname){
+                if(colname.toLowerCase().match(query.term.toLowerCase()))
+                    data.results.push({id: colname, text: colname});
+            })
+            query.callback(data);
+        },
+        multiple:true,
+        placeholder: "Select one or several columns",
+        allowClear: true
+    })
 }
 
-// TODO
+function citationLinksCategory_example(){
+    // Fetch some examples
+    var nodesSamples = []
+        ,threshold = 5
+    while(nodesSamples.length<threshold){
+        var line = 1 + Math.floor( Math.random() * ( table.length - 1 ) )
+            ,cell = table[line][+$('#citationLinksCategory').val()]
+            ,separator
+            ,expressions
+        switch ($("#citationLinksMultipleSeparator").val()){
+            case 'coma':
+                separator = ','
+                break
+            case 'semicolon':
+                separator = ';'
+                break
+            case 'dash':
+                separator = '-'
+                break
+            case 'space':
+                separator = ' '
+                break
+            case 'pipe':
+                separator = '|'
+                break
+        }
+        if($("#citationLinksMultipleSeparator").val() != 'none')
+            expressions = cell.split(separator)
+        else
+            expressions = [cell]
+        expressions.map(function(d){
+            return clean_expression(d)
+        }).filter(function(d, i){
+            return d != ""
+        }).forEach(function(d){
+            nodesSamples.push(d)
+        })
+    }
+    nodesSamples = nodesSamples.filter(function(d,i){return i<threshold})
+
+    // Display
+    $('#citationLinksCategory_example').html('').append(
+        $('<p/>').html('<strong>Sample of items</strong> extracted with these settings:').append(
+            $('<button class="btn btn-link">(<i class="icon-refresh"/> sample)</button>').click(citationLinksCategory_example)
+        )
+    ).append(
+        $('<p/>').append(
+            nodesSamples.map(function(expression){return $('<span class="label label-info"/>').text(expression).after($('<span> </span>'))})
+        )
+    )
+}
+
 function citationLinksCategory_set(){
     if($("#citationLinksCategory").val() == "none"){
-        $("#citationLinksCategory_result").html('');
+        $("#citationLinksCategory_result").html('')
+        $("#citationLinksCategory_example").html('')
     } else if($("#citationLinksCategory").val() == $("#nodesCategory").val()){
-        $("#citationLinksCategory_result").html('You cannot chose the same column for nodes and links.');
+        citationLinksCategory_example()
+        $("#citationLinksCategory_example").html('')
+        $("#citationLinksCategory_result").html('<div class="alert"><strong>Warning!</strong> You cannot chose the same column for nodes and links.</div>')
     } else {
-        multipleCitationLinksPerCell_build("#citationLinksCategory_result");
-    }
-    $("#submitButton").hide();
-}
-
-// TODO
-function multipleCitationLinksPerCell_build(parentId){
-    $(parentId).html('<img src="res/edge.png"> <b>Multiple citation links per cell?</b><br/>'
-        +'<select id="citationLinksMultipleSeparator" onchange="multipleCitationLinksPerCell_set()">'
-        +'<option value="none">Choose a separator...</option>'
-        +'<option value="nomultiples">No multiples</option>'
-        +'<option value="coma">"," Coma</option>'
-        +'<option value="semicolon">";" Semicolon</option>'
-        +'<option value="dash">"-" Dash</option>'
-        +'<option value="space">" " Space</option>'
-        +'<option value="pipe">"|" Pipe</option>'
-        +'</select>'
-        +'<br/><br/><div id="multipleCitationLinksPerCell_result"></div>');
-}
-
-// TODO
-function multipleCitationLinksPerCell_set(){
-    if($("#citationLinksMultipleSeparator").val() == "none"){
-        $("#multipleCitationLinksPerCell_result").html('');
-    } else {
-        nodesMetadata_build("#multipleCitationLinksPerCell_result");
+        citationLinksCategory_example()
+        additionalsettings_build("#citationLinksCategory_result")
     }
     $("#submitButton").hide();
 }
