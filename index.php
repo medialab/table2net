@@ -64,7 +64,7 @@
             <div class="splash-unit row">
                 <div class="span7">
                     <div class="image">
-                        <!-- <a href="index.php"><img src="res/header.png"/></a> -->
+                        <a href="index.php"><img src="res/header.png"/></a>
                     </div>
                     <div class="title">
                         Table 2 Net

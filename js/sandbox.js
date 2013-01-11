@@ -684,93 +684,18 @@ function linksCategory_set(){
     $("#submitButton").hide();
 }
 
-// TO BE REMOVED
-/*function multipleLinksPerCell_build(parentId){
-    $(parentId).html('<img src="res/y_edge.png"> <b>Multiple links per cell?</b><br/>'
-        +'<select id="linksMultipleSeparator" onchange="multipleLinksPerCell_set()">'
-        +'<option value="none">Choose a separator...</option>'
-        +'<option value="nomultiples">No multiples</option>'
-        +'<option value="coma">"," Coma</option>'
-        +'<option value="semicolon">";" Semicolon</option>'
-        +'<option value="dash">"-" Dash</option>'
-        +'<option value="space">" " Space</option>'
-        +'<option value="pipe">"|" Pipe</option>'
-        +'</select>'
-        +'<br/><i>Example:<br/>Your data is a list of papers and you want a graph of papers <b>that share an author</b>. Each paper may have several authors, and the author cell in your csv file looks like a list: "Enstein; Erdös; Bacon".<br/>Then you have to define the separator (here, the semicolon ";").</i><br/>'
-        +'<br/><br/><div id="multipleLinksPerCell_result"></div>');
-}*/
-
-// TO BE REMOVED
-/*function multipleLinksPerCell_set(){
-    if($("#linksMultipleSeparator").val() == "none"){
-        $("#multipleLinksPerCell_result").html('');
-    } else {
-        nodesMetadata_build("#multipleLinksPerCell_result");
-    }
-    $("#submitButton").hide();
-}*/
-
-// TO BE REMOVED
-/*function nodesMetadata_build(parentId){
-    $(parentId).html('<img src="res/x_node.png"> <b>Select metadata to export with nodes</b><br/>'
-        +'<i><b>Warning: </b>Adding metadata may cause a memory overload (a browser crash, not dangerous but you won\'t get any result)</i><br/>'
-        +'<div class="metadata_check">'
-        +table[0].map(function(d,i){
-            return '<span STYLE="text-wrap:none"><label for="nodesMetadata_'+i+'"><input type="checkbox" class="nodesMetadata" id="nodesMetadata_'+i+'" value="'+i+'"/>'+d+'</label></span><br/> ';
-        }).join(" ")
-        +'</div>'
-        +'<button onclick="nodesMetadata_set()">OK</button>'
-        +'</select><br/><br/><div id="nodesMetadata_result"></div>');
-}*/
-
-// TO BE REMOVED
-/*function nodesMetadata_set(){
-    if($("#typeOfGraph").val() == "table"){
-        temporality_build("#nodesMetadata_result");
-    } else {
-        linksMetadata_build("#nodesMetadata_result");
-    }
-    $("#submitButton").hide();
-}*/
-
-// TO BE REMOVED
-/*function linksMetadata_build(parentId){
-    var icon = '';
-    if($("#typeOfGraph").val() == "mono"){
-        icon = '<img src="res/y_edge.png">'
-    }
-    $(parentId).html(icon+'<b>Select metadata to export with <i>links</i></b><br/>'
-        +'<i><b>Warning: </b>Adding metadata may cause a memory overload (a browser crash, not dangerous but you won\'t get any result)</i><br/>'
-        +'<div class="metadata_check">'
-        +table[0].map(function(d,i){
-            return '<span STYLE="text-wrap:none"><label for="linksMetadata_'+i+'"><input type="checkbox" class="linksMetadata" id="linksMetadata_'+i+'" />'+d+'</label></span><br/> ';
-        }).join(" ")
-        +'</div>'
-        +'<button onclick="linksMetadata_set()">OK</button>'
-        +'</select><br/><br/><div id="linksMetadata_result"></div>');
-}
-*/
-
-// TO BE REMOVED
-/*function linksMetadata_set(){
-    temporality_build("#linksMetadata_result");
-    $("#submitButton").hide();
-}
-*/
-
-// WIP
 function additionalsettings_build(parentId){
     $(parentId).html('').append(
-        $('<hr/><h2>4. Optional settings</h2>')
+        $('<hr/><h2>4. Additional settings</h2>')
     ).append(
-        $('<h4>Optionnal: time series</h4>')
+        $('<h4>Optional: time series</h4>')
     ).append(
         $('<div class="row"/>').append(
             $('<div class="span6"/>').append(
                 $('<select id="temporality" class="span6"/>')
                     .append($('<option value="none">No temporal data</option>'))
                     .append(table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}))
-                    .on('change', linksCategory_set)
+                    //.on('change', linksCategory_set)
             ).append(
                 $('<span class="help-block">Select only a column containing <strong>integers</strong>.</span>')
             )
@@ -784,7 +709,7 @@ function additionalsettings_build(parentId){
             )
         )
     ).append(
-        $('<h4>Optionnal: edge weight</h4>')
+        $('<h4>Optional: edge weight</h4>')
     ).append(
         $('<div class="row"/>').append(
             $('<div class="span6"/>').append(
@@ -796,7 +721,7 @@ function additionalsettings_build(parentId){
         ).append(
             $('<div class="span6"/>').append(
                 $('<p class="text-info"/>').html(
-                    'gaga '
+                    'Links are naturally ranked by the number of rows matching in the table between the connected nodes. You may choose to weight the links according to it. '
                 )
             )
         )
@@ -825,31 +750,18 @@ function additionalsettings_build(parentId){
 }
 
 
-// TODO
-function edgeWeight_build(parentId){
-    $(parentId).html('<b>Edge Weight</b><br/>'
-        +'<select id="edgeWeight" onchange="edgeWeight_set()">'
-        +'<option value="none">Choose...</option>'
-        +'<option value="true">Weight the edges</option>'
-        +'<option value="false">No weight</option>'
-        +'</select><br/><br/><div id="edgeWeight_result"></div>');
-}
 
-// TODO
-function edgeWeight_set(){
-    if($("#edgeWeight").val() == "none"){
-        $("#edgeWeight_result").html('');
-    } else {
-        buildButton_build("#edgeWeight_result");
-    }
-    $("#submitButton").hide();
-}
 
-// TODO
-function buildButton_build(parentId){
-    $(parentId).html('<b>Build the graph</b><br/>'
-        +'<input type="button" onclick="buildGraph()" value="Build" style="width: 200px; height: 30px;"/><br/>NB: this may take a while, please be patient.');
-}
+
+
+
+
+
+
+
+
+
+
 
 
 

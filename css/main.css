@@ -4,25 +4,18 @@
    Author's custom styles
    ========================================================================== */
 
+footer{
+  margin-top: 200px;
+}
+
 /* --------------------------
    Data preview table
    -------------------------- */
 #dataPreview{
   width: 100%;
-  height: 300px;
+  height: 250px;
   border: 1px solid #EAEAEA;
   overflow:scroll;
-}
-
-
-/* --------------------------
-   Mini-logos on the top-right of the navbar
-   -------------------------- */
-.navbar .minilogo{
-  margin-top: 8px;
-}
-.navbar .minilogo img{
-  margin-left: 12px;
 }
 
 /* --------------------------
