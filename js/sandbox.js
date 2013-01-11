@@ -1296,7 +1296,7 @@ function getBipartiteLinks(nodesColumnId_1, nodesMultiples_1, nodesSeparator_1, 
         }
     }
     
-    console.log(secondaryNodesList.filter(function(d,i){return i<10;}));
+    // console.log(secondaryNodesList.filter(function(d,i){return i<10;}));
     
     // Now we can build the bipartite graph of nodes and secondaryNodes linked.
     var links = d3.merge(secondaryNodesList.map(function(d){
@@ -1394,6 +1394,7 @@ function getCitationLinks(nodesColumnId, nodesMultiples, nodesSeparator, linksCo
 function buildGraph(){
     // UI: display progress bar
     $('#build_container').html('<div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div>')
+    $('select').attr('disabled', 'true')
     setTimeout(buildGraph_, 10)
 }
 
@@ -1613,10 +1614,21 @@ function buildGraph_(){
     htmlSummary += "</ul></li>";
     
     // Metadata
-    var nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
-    var linksExportedColumnIds = $('#links_metadata').val().split(',')
-    // var nodesExportedColumnIds = $(".nodesMetadata").toArray().filter(function(d){return $(d).attr("checked");}).map(function(d){return $(d).val();}) || [];
-    // var linksExportedColumnIds = $(".linksMetadata").toArray().filter(function(d){return $(d).attr("checked");}).map(function(d){return $(d).val();}) || [];
+    var nodesExportedColumnIds
+        ,linksExportedColumnIds
+    if(typeOfGraph == 'mono'){
+        nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
+        linksExportedColumnIds = $('#links_metadata').val().split(',')
+    } else if(typeOfGraph == 'bipartite'){
+        nodesExportedColumnIds = [$('#nodes1_metadata').val().split(','), $('#nodes2_metadata').val().split(',')]
+        linksExportedColumnIds = []
+    } else if(typeOfGraph == 'citation'){
+        nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
+        linksExportedColumnIds = $('#citationLinks_metadata').val().split(',')
+    } else if(typeOfGraph == 'table'){
+        nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
+        linksExportedColumnIds = []
+    }
     
     // HTML Summary
     htmlSummary += "<li>Metadata:<ul>";
@@ -1672,9 +1684,18 @@ function buildGraph_(){
     bb.append("\n" +  '<attributes class="node" mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
     bb.append("\n" +  '<attribute id="attr_type" title="Type" type="string"></attribute>');
     bb.append("\n" +  '<attribute id="global_occurrences" title="Occurrences Count" type="integer"></attribute>');
-    nodesExportedColumnIds.forEach(function(colId){
-        bb.append("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>');
-    });
+    if(typeOfGraph == 'bipartite'){
+        nodesExportedColumnIds[0].forEach(function(colId){
+            bb.append("\n" +  '<attribute id="attr_1_'+colId+'" title="'+xmlEntities(tableHeader[colId])+' (type 1)" type="string"></attribute>')
+        })
+        nodesExportedColumnIds[1].forEach(function(colId){
+            bb.append("\n" +  '<attribute id="attr_2_'+colId+'" title="'+xmlEntities(tableHeader[colId])+' (type 2)" type="string"></attribute>')
+        })
+    } else {
+        nodesExportedColumnIds.forEach(function(colId){
+            bb.append("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>')
+        })
+    }
     bb.append("\n" +  '</attributes>');
     
     // Edges Attributes
@@ -1717,45 +1738,143 @@ function buildGraph_(){
         bb.append("\n" +  '<attvalue for="attr_type" value="'+xmlEntities(type)+'"></attvalue>');
         bb.append("\n" +  '<attvalue for="global_occurrences" value="'+d.tableRows.length+'"></attvalue>');
         
-        nodesExportedColumnIds.forEach(function(colId){
-            if(dynMode!="year"){
-                var currentAttValue = "";
-                var attValues = d.tableRows.map(function(rowId){
-                    return table[rowId][colId];
-                }).sort(function(a, b) {
-                    return a < b ? -1 : a > b ? 1 : 0;
-                }).filter(function(attValue){
-                    var result = (attValue != currentAttValue);
-                    currentAttValue = attValue;
-                    return result;
-                }).join(" | ");
-                
-                bb.append("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
-            } else {
-                attValuesPerYear = [];
-                d.tableRows.forEach(function(rowId){
-                    var year = table[rowId][dynColumnId];
-                    var attValuesThisYear = attValuesPerYear[year] || [];
-                    
-                    var attValue = table[rowId][colId];
-                    attValuesThisYear.push(attValue);
-                    
-                    attValuesPerYear[year] = attValuesThisYear;
-                });
-                d3.keys(attValuesPerYear).forEach(function(year){
+        if(typeOfGraph == 'bipartite'){
+            nodesExportedColumnIds[0].forEach(function(colId){
+                if(dynMode!="year"){
+                    if(type == tableHeader[nodesColumnId1]){
+                        var currentAttValue = ""
+                        var attValues = d.tableRows.map(function(rowId){
+                            return table[rowId][colId]
+                        }).sort(function(a, b) {
+                            return a < b ? -1 : a > b ? 1 : 0
+                        }).filter(function(attValue){
+                            var result = (attValue != currentAttValue)
+                            currentAttValue = attValue
+                            return result
+                        }).join(" | ")
+                        
+                        bb.append("\n" +  '<attvalue for="attr_1_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
+                    } else {
+                        bb.append("\n" +  '<attvalue for="attr_1_'+colId+'" value=""></attvalue>');
+                    }
+                } else {
+                    attValuesPerYear = []
+                    d.tableRows.forEach(function(rowId){
+                        var year = table[rowId][dynColumnId]
+                        var attValuesThisYear = attValuesPerYear[year] || []
+                        
+                        var attValue = table[rowId][colId]
+                        attValuesThisYear.push(attValue)
+                        
+                        attValuesPerYear[year] = attValuesThisYear
+                    })
+                    d3.keys(attValuesPerYear).forEach(function(year){
+                        var currentAttValue = ""
+                        var attValues = attValuesPerYear[year].sort(function(a, b) {
+                            return a < b ? -1 : a > b ? 1 : 0
+                        }).filter(function(attValue){
+                            var result = (attValue != currentAttValue)
+                            currentAttValue = attValue
+                            return result
+                        }).join(" | ")
+                        year = parseInt(year)
+                        if(type == tableHeader[nodesColumnId1]){
+                            bb.append("\n" +  '<attvalue for="attr_1_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                        } else {
+                            bb.append("\n" +  '<attvalue for="attr_1_'+colId+'" value="" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                        }
+                    })
+                }
+            })
+            nodesExportedColumnIds[1].forEach(function(colId){
+                if(dynMode!="year"){
+                    if(type == tableHeader[nodesColumnId2]){
+                        var currentAttValue = ""
+                        var attValues = d.tableRows.map(function(rowId){
+                            return table[rowId][colId]
+                        }).sort(function(a, b) {
+                            return a < b ? -1 : a > b ? 1 : 0
+                        }).filter(function(attValue){
+                            var result = (attValue != currentAttValue)
+                            currentAttValue = attValue
+                            return result
+                        }).join(" | ")
+                        
+                        bb.append("\n" +  '<attvalue for="attr_2_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
+                    } else {
+                        bb.append("\n" +  '<attvalue for="attr_2_'+colId+'" value=""></attvalue>');
+                    }
+                } else {
+                    attValuesPerYear = []
+                    d.tableRows.forEach(function(rowId){
+                        var year = table[rowId][dynColumnId]
+                        var attValuesThisYear = attValuesPerYear[year] || []
+                        
+                        var attValue = table[rowId][colId]
+                        attValuesThisYear.push(attValue)
+                        
+                        attValuesPerYear[year] = attValuesThisYear
+                    })
+                    d3.keys(attValuesPerYear).forEach(function(year){
+                        var currentAttValue = ""
+                        var attValues = attValuesPerYear[year].sort(function(a, b) {
+                            return a < b ? -1 : a > b ? 1 : 0
+                        }).filter(function(attValue){
+                            var result = (attValue != currentAttValue)
+                            currentAttValue = attValue
+                            return result
+                        }).join(" | ")
+                        year = parseInt(year)
+                        if(type == tableHeader[nodesColumnId2]){
+                            bb.append("\n" +  '<attvalue for="attr_2_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                        } else {
+                            bb.append("\n" +  '<attvalue for="attr_2_'+colId+'" value="" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                        }
+                    })
+                }
+            })
+        } else {
+            nodesExportedColumnIds.forEach(function(colId){
+                if(dynMode!="year"){
                     var currentAttValue = "";
-                    var attValues = attValuesPerYear[year].sort(function(a, b) {
+                    var attValues = d.tableRows.map(function(rowId){
+                        return table[rowId][colId];
+                    }).sort(function(a, b) {
                         return a < b ? -1 : a > b ? 1 : 0;
                     }).filter(function(attValue){
                         var result = (attValue != currentAttValue);
                         currentAttValue = attValue;
                         return result;
                     }).join(" | ");
-                    year = parseInt(year);
-                    bb.append("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>');
-                });
-            }
-        });
+                    
+                    bb.append("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
+                } else {
+                    attValuesPerYear = [];
+                    d.tableRows.forEach(function(rowId){
+                        var year = table[rowId][dynColumnId];
+                        var attValuesThisYear = attValuesPerYear[year] || [];
+                        
+                        var attValue = table[rowId][colId];
+                        attValuesThisYear.push(attValue);
+                        
+                        attValuesPerYear[year] = attValuesThisYear;
+                    });
+                    d3.keys(attValuesPerYear).forEach(function(year){
+                        var currentAttValue = "";
+                        var attValues = attValuesPerYear[year].sort(function(a, b) {
+                            return a < b ? -1 : a > b ? 1 : 0;
+                        }).filter(function(attValue){
+                            var result = (attValue != currentAttValue);
+                            currentAttValue = attValue;
+                            return result;
+                        }).join(" | ");
+                        year = parseInt(year);
+                        bb.append("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>');
+                    });
+                }
+            })
+        }
+            
         
         bb.append("\n" +  '</attvalues>');
         bb.append("\n" +  '</node>');
