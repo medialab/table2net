@@ -339,105 +339,6 @@ function nodesColumn_example(){
     )
 }
 
-// TODO
-function nodesColumn1_build(parentId){
-    $(parentId).html('<img src="res/x_node.png"> <b>Which is the first type of nodes?</b><br/>'
-        +'<select id="nodesCategory1" onchange="nodesColumn1_set()">'
-        +'<option value="none">Choose a column...</option>'
-        +table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}).join("")
-        +'</select>'
-        +'<br/><i>Note: in a bipartite graph, you have to chose two different types of nodes.</i><br/>'
-        +'<br/><br/><div id="nodesColumn1_result"></div>');
-}
-
-// TODO
-function nodesColumn1_set(){
-    if($("#nodesCategory1").val() == "none"){
-        $("#nodesColumn1_result").html('');
-    } else {
-        multipleNodesPerCell1_build("#nodesColumn1_result");
-    }
-    $("#submitButton").hide();
-}
-
-// TODO
-function multipleNodesPerCell1_build(parentId){
-    $(parentId).html('<img src="res/x_node.png"> <b>Multiple nodes per cell? (type 1)</b><br/>'
-        +'<select id="nodesMultipleSeparator1" onchange="multipleNodesPerCell1_set()">'
-        +'<option value="none">Choose a separator...</option>'
-        +'<option value="nomultiples">No multiples</option>'
-        +'<option value="coma">"," Coma</option>'
-        +'<option value="semicolon">";" Semicolon</option>'
-        +'<option value="dash">"-" Dash</option>'
-        +'<option value="space">" " Space</option>'
-        +'<option value="pipe">"|" Pipe</option>'
-        +'</select>'
-        +'<br/><i>Example:<br/>Your data is a list of papers and you want a <b>graph of authors</b>. Each paper may have several authors, and the author cell in your csv file looks like a list: "Enstein; Erdös; Bacon".<br/>Then you have to define the separator (here, the semicolon ";").</i><br/>'
-        +'<br/><br/><div id="multipleNodesPerCell1_result"></div>');
-}
-
-// TODO
-function multipleNodesPerCell1_set(){
-    if($("#nodesMultipleSeparator1").val() == "none"){
-        $("#multipleNodesPerCell1_result").html('');
-    } else {
-        nodesColumn2_build("#multipleNodesPerCell1_result");
-    }
-    $("#submitButton").hide();
-}
-
-// TODO
-function nodesColumn2_build(parentId){
-    var nodesColumnId1 = $("#nodesCategory1").val();
-    $(parentId).html('<img src="res/y_node.png"> <b>Which is the second type of nodes?</b><br/>'
-        +'<select id="nodesCategory2" onchange="nodesColumn2_set()">'
-        +'<option value="none">Choose a column...</option>'
-        +table[0].map(function(d,i){
-            if(i != nodesColumnId1){
-                return '<option value="'+i+'">'+d+'</option>';
-            } else {
-                return '';
-            }
-        }).join("")
-        +'</select>'
-        +'<br/><br/><div id="nodesColumn2_result"></div>');
-}
-
-// TODO
-function nodesColumn2_set(){
-    if($("#nodesCategory2").val() == "none"){
-        $("#nodesColumn2_result").html('');
-    } else {
-        multipleNodesPerCell2_build("#nodesColumn2_result");
-    }
-    $("#submitButton").hide();
-}
-
-// TODO
-function multipleNodesPerCell2_build(parentId){
-    $(parentId).html('<img src="res/y_node.png"> <b>Multiple nodes per cell? (type 2)</b><br/>'
-        +'<select id="nodesMultipleSeparator2" onchange="multipleNodesPerCell2_set()">'
-        +'<option value="none">Choose a separator...</option>'
-        +'<option value="nomultiples">No multiples</option>'
-        +'<option value="coma">"," Coma</option>'
-        +'<option value="semicolon">";" Semicolon</option>'
-        +'<option value="dash">"-" Dash</option>'
-        +'<option value="space">" " Space</option>'
-        +'<option value="pipe">"|" Pipe</option>'
-        +'</select>'
-        +'<br/><br/><div id="multipleNodesPerCell2_result"></div>');
-}
-
-// TODO
-function multipleNodesPerCell2_set(){
-    if($("#linksMultipleSeparator2").val() == "none"){
-        $("#multipleNodesPerCell2_result").html('');
-    } else {
-        nodesMetadata_build("#multipleNodesPerCell2_result");
-    }
-    $("#submitButton").hide();
-}
-
 function nodesColumn_set(){
     if($("#nodesCategory").val() == "none"){
         $("#nodesColumn_result").html('')
@@ -449,41 +350,311 @@ function nodesColumn_set(){
     $("#submitButton").hide()
 }
 
-// TO BE REMOVED
-/*function multipleNodesPerCell_build(parentId){
+function nodesColumn1_build(parentId){
+    $(parentId).html('').append(
+        $('<hr/><h2>2. Nodes</h2>')
+    ).append(
+        $('<h4><img src="res/x_node.png"> Which column defines the <em>first type</em> of nodes?</h4>')
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<select id="nodesCategory1" class="span6"/>')
+                    .append($('<option value="none">Choose a column...</option>'))
+                    .append(table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}))
+                    .on('change', nodesColumn1_set)
+            ).append(
+                $('<select id="nodesMultipleSeparator1" class="span6"/>')
+                    .append($('<option value="nomultiples">One expression per cell</option>'))
+                    .append($('<option value="coma">Comma-separated ","</option>'))
+                    .append($('<option value="semicolon">Semicolon-separated ";"</option>'))
+                    .append($('<option value="dash">Dash-separated "-"</option>'))
+                    .append($('<option value="space">Space-separated " "</option>'))
+                    .append($('<option value="pipe">Pipe-separated "|"</option>'))
+                    .on('change', nodesColumn1_set)
+            ).append(
+                $('<div class="row"/>').append(
+                    $('<div class="span6"  id="nodesColumn1_example"/>')
+                )
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'The expressions in this column will define the <strong>first type</strong> of nodes. Some cleaning will be applied (unnecessary spaces, upper case...)'
+                )
+            ).append(
+                $('<p class="text-info"/>').html(
+                    '<strong>If you have multiple items per cell, specify the separator</strong>. '
+                    +'For instance you have a list of papers, you want a graph of authors and papers, and the cells of the <em>Author</em> column look like this: "Enstein; Erdös; Bacon". '
+                    +'You have multiple authors per cell. Then you have to set the separator, here the semicolon ";".'
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').css('margin-top', '20px').append(
+            $('<div class="span12"/>').append(
+                $('<h4><img src="res/x_node.png"> Do you want attributes for the <em>first type</em> of nodes?</h4>')
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<a style="width:100%;" id="nodes1_metadata"> </a>')
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'You may transfer the content of some columns to the network as attributes of the <strong>first type</strong> of nodes. '
+                    +'This feature is only useful under certain circumstances, when the attribute columns actually qualify the node column. '
+                    +'Else, it is possible (and probable) that multiple attributes correspond to a single node. If this happens, the multiple values will be concatenated with the | separator (pipe). '
+                )
+            ).append(
+                $('<p class="text-info"/>').html(
+                    '<strong>Warning: </strong>Adding metadata may cause a memory overload (a browser crash, not dangerous but you won\'t get any result)'
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span12" id="nodesColumn1_result"/>')
+        )
+    )
 
-    $(parentId).html('<img src="res/x_node.png"> <b>Multiple nodes per cell?</b><br/>'
-        +'<select id="nodesMultipleSeparator" onchange="multipleNodesPerCell_set()">'
-        +'<option value="none">Choose a separator...</option>'
-        +'<option value="nomultiples">No multiples</option>'
-        +'<option value="coma">"," Coma</option>'
-        +'<option value="semicolon">";" Semicolon</option>'
-        +'<option value="dash">"-" Dash</option>'
-        +'<option value="space">" " Space</option>'
-        +'<option value="pipe">"|" Pipe</option>'
-        +'</select>'
-        +'<br/><i>Example:<br/>Your data is a list of papers and you want a <b>graph of authors</b>. Each paper may have several authors, and the author cell in your csv file looks like a list: "Enstein; Erdös; Bacon".<br/>Then you have to define the separator (here, the semicolon ";").</i><br/>'
-        +'<br/><br/><div id="multipleNodesPerCell_result"></div>'
-        );
-}*/
+    // Deal with metadata selector
+    $("#nodes1_metadata").select2({
+        query: function (query) {
+            var data = {results: []}, i, j, s
+            
+            table[0].forEach(function(colname){
+                if(colname.toLowerCase().match(query.term.toLowerCase()))
+                    data.results.push({id: colname, text: colname});
+            })
+            query.callback(data);
+        },
+        multiple:true,
+        placeholder: "Select one or several columns",
+        allowClear: true
+    })
+}
 
-// TO BE REMOVED
-/*function multipleNodesPerCell_set(){
-    if($("#nodesMultipleSeparator").val() == "none"){
-        $("#multipleNodesPerCell_result").html('');
-    } else {
-        if($("#typeOfGraph").val() == "mono"){
-            linksCategory_build("#multipleNodesPerCell_result");
-        } else if($("#typeOfGraph").val() == "citation"){
-            citationLinkCategory_build("#multipleNodesPerCell_result");
-        } else if($("#typeOfGraph").val() == "table"){
-            nodesMetadata_build("#multipleNodesPerCell_result");
-        } else {
-            $("#multipleNodesPerCell_result").html('<i>Error in type of graph</i>');
+function nodesColumn1_example(){
+    // Fetch some examples
+    var nodesSamples = []
+        ,threshold = 5
+    while(nodesSamples.length<threshold){
+        var line = 1 + Math.floor( Math.random() * ( table.length - 1 ) )
+            ,cell = table[line][+$('#nodesCategory1').val()]
+            ,separator
+            ,expressions
+        switch ($("#nodesMultipleSeparator1").val()){
+            case 'coma':
+                separator = ','
+                break
+            case 'semicolon':
+                separator = ';'
+                break
+            case 'dash':
+                separator = '-'
+                break
+            case 'space':
+                separator = ' '
+                break
+            case 'pipe':
+                separator = '|'
+                break
         }
+        if($("#nodesMultipleSeparator1").val() != 'none')
+            expressions = cell.split(separator)
+        else
+            expressions = [cell]
+        expressions.map(function(d){
+            return clean_expression(d)
+        }).filter(function(d, i){
+            return d != ""
+        }).forEach(function(d){
+            nodesSamples.push(d)
+        })
     }
-    $("#submitButton").hide();
-}*/
+    nodesSamples = nodesSamples.filter(function(d,i){return i<threshold})
+
+    // Display
+    $('#nodesColumn1_example').html('').append(
+        $('<p/>').html('<strong>Sample of nodes</strong> extracted with these settings:').append(
+            $('<button class="btn btn-link">(<i class="icon-refresh"/> sample)</button>').click(nodesColumn1_example)
+        )
+    ).append(
+        $('<p/>').append(
+            nodesSamples.map(function(expression){return $('<span class="label label-info"/>').text(expression).after($('<span> </span>'))})
+        )
+    )
+}
+
+function nodesColumn1_set(){
+    if($("#nodesCategory1").val() == "none"){
+        $("#nodesColumn1_result").html('')
+        $("#nodesColumn1_example").html('')
+    } else {
+        nodesColumn1_example()
+        nodesColumn2_build("#nodesColumn1_result")
+    }
+    $("#submitButton").hide()
+}
+
+function nodesColumn2_build(parentId){
+    $(parentId).html('').append(
+        $('<h4><img src="res/y_node.png"> Which column defines the <em>second type</em> of nodes?</h4>')
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<select id="nodesCategory2" class="span6"/>')
+                    .append($('<option value="none">Choose a column...</option>'))
+                    .append(table[0].map(function(d,i){return '<option value="'+i+'">'+d+'</option>';}))
+                    .on('change', nodesColumn2_set)
+            ).append(
+                $('<select id="nodesMultipleSeparator2" class="span6"/>')
+                    .append($('<option value="nomultiples">One expression per cell</option>'))
+                    .append($('<option value="coma">Comma-separated ","</option>'))
+                    .append($('<option value="semicolon">Semicolon-separated ";"</option>'))
+                    .append($('<option value="dash">Dash-separated "-"</option>'))
+                    .append($('<option value="space">Space-separated " "</option>'))
+                    .append($('<option value="pipe">Pipe-separated "|"</option>'))
+                    .on('change', nodesColumn2_set)
+            ).append(
+                $('<div class="row"/>').append(
+                    $('<div class="span6"  id="nodesColumn2_example"/>')
+                )
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'The expressions in this column will define the <strong>second type</strong> of nodes. '
+                    +'Typically if you have a list of papers and you want a bipartite graph of authors and papers, select <em>Author</em> as the first type of nodes and <em>Title</em> as the second type of nodes. '
+                )
+            ).append(
+                $('<p class="text-info"/>').html(
+                    '<strong>If you have multiple items per cell, specify the separator</strong>. '
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').css('margin-top', '20px').append(
+            $('<div class="span12"/>').append(
+                $('<h4><img src="res/y_node.png"> Do you want attributes for the <em>second type</em> of nodes?</h4>')
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span6"/>').append(
+                $('<a style="width:100%;" id="nodes2_metadata"> </a>')
+            )
+        ).append(
+            $('<div class="span6"/>').append(
+                $('<p class="text-info"/>').html(
+                    'You may transfer the content of some columns to the network as attributes of the <strong>second type</strong> of nodes. '
+                )
+            ).append(
+                $('<p class="text-info"/>').html(
+                    '<strong>Warning: </strong>Adding metadata may cause a memory overload (a browser crash, not dangerous but you won\'t get any result)'
+                )
+            )
+        )
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span12" id="nodesColumn2_result"/>')
+        )
+    )
+
+    // Deal with metadata selector
+    $("#nodes2_metadata").select2({
+        query: function (query) {
+            var data = {results: []}, i, j, s
+            
+            table[0].forEach(function(colname){
+                if(colname.toLowerCase().match(query.term.toLowerCase()))
+                    data.results.push({id: colname, text: colname});
+            })
+            query.callback(data);
+        },
+        multiple:true,
+        placeholder: "Select one or several columns",
+        allowClear: true
+    })
+}
+
+function nodesColumn2_example(){
+    // Fetch some examples
+    var nodesSamples = []
+        ,threshold = 5
+    while(nodesSamples.length<threshold){
+        var line = 1 + Math.floor( Math.random() * ( table.length - 1 ) )
+            ,cell = table[line][+$('#nodesCategory2').val()]
+            ,separator
+            ,expressions
+        switch ($("#nodesMultipleSeparator2").val()){
+            case 'coma':
+                separator = ','
+                break
+            case 'semicolon':
+                separator = ';'
+                break
+            case 'dash':
+                separator = '-'
+                break
+            case 'space':
+                separator = ' '
+                break
+            case 'pipe':
+                separator = '|'
+                break
+        }
+        if($("#nodesMultipleSeparator2").val() != 'none')
+            expressions = cell.split(separator)
+        else
+            expressions = [cell]
+        expressions.map(function(d){
+            return clean_expression(d)
+        }).filter(function(d, i){
+            return d != ""
+        }).forEach(function(d){
+            nodesSamples.push(d)
+        })
+    }
+    nodesSamples = nodesSamples.filter(function(d,i){return i<threshold})
+
+    // Display
+    $('#nodesColumn2_example').html('').append(
+        $('<p/>').html('<strong>Sample of nodes</strong> extracted with these settings:').append(
+            $('<button class="btn btn-link">(<i class="icon-refresh"/> sample)</button>').click(nodesColumn2_example)
+        )
+    ).append(
+        $('<p/>').append(
+            nodesSamples.map(function(expression){return $('<span class="label label-info"/>').text(expression).after($('<span> </span>'))})
+        )
+    )
+}
+
+function nodesColumn2_set(){
+    if($("#nodesCategory2").val() == "none"){
+        $("#nodesColumn2_result").html('')
+        $("#nodesColumn2_example").html('')
+    } else {
+        nodesColumn2_example()
+        nolink_build("#nodesColumn2_result")
+    }
+    $("#submitButton").hide()
+}
+
+function nolink_build(parentId){
+    $(parentId).html('').append(
+        $('<hr/><h2>3. Links</h2>')
+    ).append(
+        $('<p>You have nothing to set here.</p>')
+    ).append(
+        $('<div class="row"/>').append(
+            $('<div class="span12" id="linksCategory_result"/>')
+        )
+    )
+    additionalsettings_build("#linksCategory_result")
+}
 
 // TODO
 function citationLinkCategory_build(parentId){
