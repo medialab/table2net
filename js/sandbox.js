@@ -1671,54 +1671,51 @@ function buildGraph_(){
     /////////////////////////
     
     
-    // Blob Builder
-    window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
-    var bb = new BlobBuilder;
+    var content = []
     
-    
-    bb.append('<?xml version="1.0" encoding="UTF-8"?><gexf xmlns="http://www.gexf.net/1.1draft" version="1.1" xmlns:viz="http://www.gexf.net/1.1draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.1draft http://www.gexf.net/1.1draft/gexf.xsd">');
-    bb.append("\n" +  '<meta lastmodifieddate="2011-06-15"><creator>GraphMaker</creator><description>Jacomy Mathieu, Sciences Po Medialab and WebAtlas</description></meta>');
-    bb.append("\n" +  '<graph defaultedgetype="'+((typeOfGraph=="citation")?('directed'):('undirected'))+'" '+((dynMode!="year")?(''):('timeformat="double"'))+' mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
+    content.push('<?xml version="1.0" encoding="UTF-8"?><gexf xmlns="http://www.gexf.net/1.1draft" version="1.1" xmlns:viz="http://www.gexf.net/1.1draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.1draft http://www.gexf.net/1.1draft/gexf.xsd">');
+    content.push("\n" +  '<meta lastmodifieddate="2011-06-15"><creator>GraphMaker</creator><description>Jacomy Mathieu, Sciences Po Medialab and WebAtlas</description></meta>');
+    content.push("\n" +  '<graph defaultedgetype="'+((typeOfGraph=="citation")?('directed'):('undirected'))+'" '+((dynMode!="year")?(''):('timeformat="double"'))+' mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
     
     // Nodes Attributes
-    bb.append("\n" +  '<attributes class="node" mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
-    bb.append("\n" +  '<attribute id="attr_type" title="Type" type="string"></attribute>');
-    bb.append("\n" +  '<attribute id="global_occurrences" title="Occurrences Count" type="integer"></attribute>');
+    content.push("\n" +  '<attributes class="node" mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
+    content.push("\n" +  '<attribute id="attr_type" title="Type" type="string"></attribute>');
+    content.push("\n" +  '<attribute id="global_occurrences" title="Occurrences Count" type="integer"></attribute>');
     if(typeOfGraph == 'bipartite'){
         nodesExportedColumnIds[0].forEach(function(colId){
-            bb.append("\n" +  '<attribute id="attr_1_'+colId+'" title="'+xmlEntities(tableHeader[colId])+' (type 1)" type="string"></attribute>')
+            content.push("\n" +  '<attribute id="attr_1_'+colId+'" title="'+xmlEntities(tableHeader[colId])+' (type 1)" type="string"></attribute>')
         })
         nodesExportedColumnIds[1].forEach(function(colId){
-            bb.append("\n" +  '<attribute id="attr_2_'+colId+'" title="'+xmlEntities(tableHeader[colId])+' (type 2)" type="string"></attribute>')
+            content.push("\n" +  '<attribute id="attr_2_'+colId+'" title="'+xmlEntities(tableHeader[colId])+' (type 2)" type="string"></attribute>')
         })
     } else {
         nodesExportedColumnIds.forEach(function(colId){
-            bb.append("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>')
+            content.push("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>')
         })
     }
-    bb.append("\n" +  '</attributes>');
+    content.push("\n" +  '</attributes>');
     
     // Edges Attributes
-    bb.append("\n" +  '<attributes class="edge" mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
-    bb.append("\n" +  '<attribute id="attr_type" title="Type" type="string"></attribute>');
-    bb.append("\n" +  '<attribute id="matchings_count" title="Matchings Count" type="integer"></attribute>');
+    content.push("\n" +  '<attributes class="edge" mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
+    content.push("\n" +  '<attribute id="attr_type" title="Type" type="string"></attribute>');
+    content.push("\n" +  '<attribute id="matchings_count" title="Matchings Count" type="integer"></attribute>');
     linksExportedColumnIds.forEach(function(colId){
-        bb.append("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>');
+        content.push("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>');
     });
-    bb.append("\n" +  '</attributes>');
+    content.push("\n" +  '</attributes>');
     
     // Nodes
-    bb.append("\n" +  '<nodes>');
+    content.push("\n" +  '<nodes>');
     nodes.forEach(function(d){
         var id = dehydrate_expression(tableHeader[d.colId])+"_"+$.md5(d.node);
         var label = d.node;
         var type = tableHeader[d.colId];
         
-        bb.append("\n" +  '<node id="'+id+'" label="'+xmlEntities(label)+'">');
+        content.push("\n" +  '<node id="'+id+'" label="'+xmlEntities(label)+'">');
         
         // Dynamic
         if(dynMode=="year"){
-            bb.append("\n" +  '<spells>');
+            content.push("\n" +  '<spells>');
             var years = [];
             d.tableRows.forEach(function(rowId){
                 var year = table[rowId][dynColumnId];
@@ -1728,15 +1725,15 @@ function buildGraph_(){
             });
             years.forEach(function(y){
                 y = parseInt(y);
-                bb.append("\n" +  '<spell start="'+y+'.0" end="'+(y+1)+'.0" />');
+                content.push("\n" +  '<spell start="'+y+'.0" end="'+(y+1)+'.0" />');
             });
-            bb.append("\n" +  '</spells>');
+            content.push("\n" +  '</spells>');
         }
         
         // AttributeValues
-        bb.append("\n" +  '<attvalues>');
-        bb.append("\n" +  '<attvalue for="attr_type" value="'+xmlEntities(type)+'"></attvalue>');
-        bb.append("\n" +  '<attvalue for="global_occurrences" value="'+d.tableRows.length+'"></attvalue>');
+        content.push("\n" +  '<attvalues>');
+        content.push("\n" +  '<attvalue for="attr_type" value="'+xmlEntities(type)+'"></attvalue>');
+        content.push("\n" +  '<attvalue for="global_occurrences" value="'+d.tableRows.length+'"></attvalue>');
         
         if(typeOfGraph == 'bipartite'){
             nodesExportedColumnIds[0].forEach(function(colId){
@@ -1753,9 +1750,9 @@ function buildGraph_(){
                             return result
                         }).join(" | ")
                         
-                        bb.append("\n" +  '<attvalue for="attr_1_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
+                        content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
                     } else {
-                        bb.append("\n" +  '<attvalue for="attr_1_'+colId+'" value=""></attvalue>');
+                        content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value=""></attvalue>');
                     }
                 } else {
                     attValuesPerYear = []
@@ -1779,9 +1776,9 @@ function buildGraph_(){
                         }).join(" | ")
                         year = parseInt(year)
                         if(type == tableHeader[nodesColumnId1]){
-                            bb.append("\n" +  '<attvalue for="attr_1_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                            content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
                         } else {
-                            bb.append("\n" +  '<attvalue for="attr_1_'+colId+'" value="" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                            content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value="" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
                         }
                     })
                 }
@@ -1800,9 +1797,9 @@ function buildGraph_(){
                             return result
                         }).join(" | ")
                         
-                        bb.append("\n" +  '<attvalue for="attr_2_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
+                        content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
                     } else {
-                        bb.append("\n" +  '<attvalue for="attr_2_'+colId+'" value=""></attvalue>');
+                        content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value=""></attvalue>');
                     }
                 } else {
                     attValuesPerYear = []
@@ -1826,9 +1823,9 @@ function buildGraph_(){
                         }).join(" | ")
                         year = parseInt(year)
                         if(type == tableHeader[nodesColumnId2]){
-                            bb.append("\n" +  '<attvalue for="attr_2_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                            content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
                         } else {
-                            bb.append("\n" +  '<attvalue for="attr_2_'+colId+'" value="" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                            content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value="" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
                         }
                     })
                 }
@@ -1847,7 +1844,7 @@ function buildGraph_(){
                         return result;
                     }).join(" | ");
                     
-                    bb.append("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
+                    content.push("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
                 } else {
                     attValuesPerYear = [];
                     d.tableRows.forEach(function(rowId){
@@ -1869,31 +1866,31 @@ function buildGraph_(){
                             return result;
                         }).join(" | ");
                         year = parseInt(year);
-                        bb.append("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>');
+                        content.push("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>');
                     });
                 }
             })
         }
             
         
-        bb.append("\n" +  '</attvalues>');
-        bb.append("\n" +  '</node>');
+        content.push("\n" +  '</attvalues>');
+        content.push("\n" +  '</node>');
         
     });
-    bb.append("\n" +  '</nodes>');
+    content.push("\n" +  '</nodes>');
     
     // Edges
-    bb.append("\n" +  '<edges>');
+    content.push("\n" +  '<edges>');
     links.forEach(function(d){
         var sourceId = dehydrate_expression(tableHeader[d.sourceColId])+"_"+$.md5(d.source);
         var targetId = dehydrate_expression(tableHeader[d.targetColId])+"_"+$.md5(d.target);
         var type = tableHeader[linksColumnId];
         
-        bb.append("\n" +  '<edge source="'+sourceId+'" target="'+targetId+'" '+((weightEdges)?('weight="'+d.tableRows.length+'"'):(''))+'>');
+        content.push("\n" +  '<edge source="'+sourceId+'" target="'+targetId+'" '+((weightEdges)?('weight="'+d.tableRows.length+'"'):(''))+'>');
         
         // Dynamic
         if(dynMode=="year"){
-            bb.append("\n" +  '<spells>');
+            content.push("\n" +  '<spells>');
             var years = [];
             d.tableRows.forEach(function(rowId){
                 var year = table[rowId][dynColumnId];
@@ -1903,15 +1900,15 @@ function buildGraph_(){
             });
             years.forEach(function(y){
                 y = parseInt(y);
-                bb.append("\n" +  '<spell start="'+y+'.0" end="'+(y+1)+'.0" />');
+                content.push("\n" +  '<spell start="'+y+'.0" end="'+(y+1)+'.0" />');
             });
-            bb.append("\n" +  '</spells>');
+            content.push("\n" +  '</spells>');
         }
         
         // AttributeValues
-        bb.append("\n" +  '<attvalues>');
-        bb.append("\n" +  '<attvalue for="matchings_count" value="'+xmlEntities(d.tableRows.length)+'"></attvalue>');
-        bb.append("\n" +  '<attvalue for="attr_type" value="'+xmlEntities(type)+'"></attvalue>');
+        content.push("\n" +  '<attvalues>');
+        content.push("\n" +  '<attvalue for="matchings_count" value="'+xmlEntities(d.tableRows.length)+'"></attvalue>');
+        content.push("\n" +  '<attvalue for="attr_type" value="'+xmlEntities(type)+'"></attvalue>');
         
         linksExportedColumnIds.forEach(function(colId){
             if(dynMode!="year"){
@@ -1926,7 +1923,7 @@ function buildGraph_(){
                     return result;
                 }).join(" | ");
                 
-                bb.append("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
+                content.push("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
             } else {
                 attValuesPerYear = [];
                 d.tableRows.forEach(function(rowId){
@@ -1948,16 +1945,16 @@ function buildGraph_(){
                         return result;
                     }).join(" | ");
                     year = parseInt(year);
-                    bb.append("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>');
+                    content.push("\n" +  '<attvalue for="attr_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>');
                 });
             }
         });
-        bb.append("\n" +  '</attvalues>');
-        bb.append("\n" +  '</edge>');
+        content.push("\n" +  '</attvalues>');
+        content.push("\n" +  '</edge>');
     });
-    bb.append("\n" +  '</edges>');
+    content.push("\n" +  '</edges>');
     
-    bb.append("\n" +  '</graph></gexf>');
+    content.push("\n" +  '</graph></gexf>');
     
     // Finalization
     /*htmlSummary += "</ul>";
@@ -1974,8 +1971,13 @@ function buildGraph_(){
     // Finally, download !
     nodes = [];
     links = [];
-    var blob = bb.getBlob("text/gexf+xml;charset=utf-8")
-    saveAs(blob, "Network.gexf")
+    
+    var blob = new Blob(content, {'type':'text/gexf+xml;charset=utf-8'})
+        ,filename = "Network.gexf"
+    if(navigator.userAgent.match(/firefox/i))
+       alert('Note:\nFirefox does not handle file names, so you will have to rename this file to\n\"'+filename+'\""\nor some equivalent.')
+    saveAs(blob, filename)
+
     $('#build_container').html('<div class="alert alert-success">GEXF downloaded <button type="button" class="close" data-dismiss="alert">&times;</button></div>')
 
 }
