@@ -10,50 +10,24 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
 
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <style>
+<?php include('includes/config_management.php'); ?>
+<?php include('includes/codetop.php'); ?>
 
+        <style>
 
             body {
                 padding-top: 60px;
                 padding-bottom: 40px;
             }
         </style>
-        <link rel="stylesheet" href="css/bootstrap-responsive.min.css">
-        <link rel="stylesheet" href="css/select2.css">
-        <link rel="stylesheet" href="css/main.css">
 
-        <script src="js/libs/modernizr-2.6.1-respond-1.1.0.min.js"></script>
     </head>
     <body>
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
 
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </a>
-                    <a class="brand" href="#">Table 2 Net</a>
-                    <div class="nav-collapse collapse">
-                        <ul class="nav">
-                            <!--<li class="active"><a href="#">Gaga</a></li>-->
-                            <!-- <li><a href="#x">xxx</a></li> -->
-                        </ul>
-
-                       <div class="pull-right">
-                            <ul class="nav">
-                                <li><a href="http://tools.medialab.sciences-po.fr"><i class="icon icon-plus icon-white"></i> <span style="color: #FFF">Médialab Tools</span></a></li>
-                            </ul>
-                        </div>
-                    </div><!--/.nav-collapse -->
-                </div>
-            </div>
-        </div>
+<?php include('includes/header.php'); ?>
 
 
 
@@ -109,7 +83,7 @@
 
         <?php include("includes/footer.php"); ?>
 
-        <?php include("includes/footcontent.php"); ?>
+        <?php include("includes/codebottom.php"); ?>
 
         <script>
             document.getElementById('csvloader_input').addEventListener('change', fileLoader.handleFileSelect, false);
