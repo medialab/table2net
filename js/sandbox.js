@@ -1752,7 +1752,7 @@ function buildGraph_(){
                         
                         content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
                     } else {
-                        content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value=""></attvalue>');
+                        content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value="n/a"></attvalue>');
                     }
                 } else {
                     attValuesPerYear = []
@@ -1778,7 +1778,7 @@ function buildGraph_(){
                         if(type == tableHeader[nodesColumnId1]){
                             content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
                         } else {
-                            content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value="" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                            content.push("\n" +  '<attvalue for="attr_1_'+colId+'" value="n/a" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
                         }
                     })
                 }
@@ -1799,7 +1799,7 @@ function buildGraph_(){
                         
                         content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value="'+xmlEntities(attValues)+'"></attvalue>');
                     } else {
-                        content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value=""></attvalue>');
+                        content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value="n/a"></attvalue>');
                     }
                 } else {
                     attValuesPerYear = []
@@ -1825,7 +1825,7 @@ function buildGraph_(){
                         if(type == tableHeader[nodesColumnId2]){
                             content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value="'+xmlEntities(attValues)+'" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
                         } else {
-                            content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value="" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
+                            content.push("\n" +  '<attvalue for="attr_2_'+colId+'" value="n/a" start="'+year+'.0" end="'+(year+1)+'.0"></attvalue>')
                         }
                     })
                 }
