@@ -1,4 +1,4 @@
-<?php
+<?php error_reporting(0);
 if(is_dir('_config/')){
 	// If there is a conf file, then take it
 	include('_config/conf.php');
@@ -18,8 +18,8 @@ function recurse_copy($src, $dst) {
                 // recurse_copy($src . '/' . $file,$dst . '/' . $file);
                 // (not the sub directories)
             } 
-            else { 
-                copy($src . '/' . $file,$dst . '/' . $file); 
+            else {
+                copy($src . '/' . $file,$dst . '/' . $file));
             } 
         } 
     } 
