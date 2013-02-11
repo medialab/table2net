@@ -19,7 +19,7 @@ function recurse_copy($src, $dst) {
                 // (not the sub directories)
             } 
             else {
-                copy($src . '/' . $file,$dst . '/' . $file));
+                copy($src . '/' . $file,$dst . '/' . $file);
             } 
         } 
     } 
