@@ -23,22 +23,24 @@ var fileLoader = {
         };
     },
     updateProgress:function(evt){
+        var target = evt.target || evt.srcElement
         // evt is an ProgressEvent.
         if (evt.lengthComputable) {
             var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
             // Increase the progress bar length.
             if (percentLoaded < 100) {
-                var bar = $(evt.srcElement).parent().siblings('.progress').children('.bar')
+                var bar = $(target).parent().siblings('.progress').children('.bar')
                 bar.css('width', percentLoaded + '%')
                 bar.text(percentLoaded + '%')
             }
         }
     },
     handleFileSelect: function(evt) {
+        var target = evt.target || evt.srcElement
         // Reset progress indicator on new file selection.
-        $(evt.srcElement).parent().hide()
-        $(evt.srcElement).parent().siblings('.progress').show()
-        var bar = $(evt.srcElement).parent().siblings('.progress').children('.bar')
+        $(target).parent().hide()
+        $(target).parent().siblings('.progress').show()
+        var bar = $(target).parent().siblings('.progress').children('.bar')
         bar.css('width', '0%')
         
         fileLoader.reader = new FileReader();
@@ -48,16 +50,16 @@ var fileLoader = {
             alert('File read cancelled');
         };
         fileLoader.reader.onloadstart = function(e) {
-            var bar = $(evt.srcElement).parent().siblings('.progress').children('.bar')
+            var bar = $(target).parent().siblings('.progress').children('.bar')
             bar.removeClass("bar-success")
             bar.removeClass("bar-warning")
         };
         fileLoader.reader.onload = function(e) {
             // Ensure that the progress bar displays 100% at the end.
-            var bar = $(evt.srcElement).parent().siblings('.progress').children('.bar')
+            var bar = $(target).parent().siblings('.progress').children('.bar')
             bar.css('width', '100%')
             bar.text('Reading: 100% - parsing...')
-            setTimeout("fileLoader.finalize('"+evt.srcElement.parentNode.parentNode.id+"');", 2000)
+            setTimeout("fileLoader.finalize('"+target.parentNode.parentNode.id+"');", 2000)
         }
         
         fileLoader.reader.readAsText(evt.target.files[0]);
