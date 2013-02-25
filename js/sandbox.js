@@ -1619,16 +1619,37 @@ function buildGraph_(){
     var nodesExportedColumnIds
         ,linksExportedColumnIds
     if(typeOfGraph == 'mono'){
-        nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
-        linksExportedColumnIds = $('#links_metadata').val().split(',')
+        if($('#nodes_metadata').val() != '')
+            nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
+        else
+            nodesExportedColumnIds = []
+        if($('#links_metadata').val() != '')
+            linksExportedColumnIds = $('#links_metadata').val().split(',')
+        else
+            linksExportedColumnIds = []
     } else if(typeOfGraph == 'bipartite'){
-        nodesExportedColumnIds = [$('#nodes1_metadata').val().split(','), $('#nodes2_metadata').val().split(',')]
+        var nodesExportedColumnIds_1 = []
+        if($('#nodes1_metadata').val() != '')
+            nodesExportedColumnIds_1 = $('#nodes1_metadata').val().split(',')
+        var nodesExportedColumnIds_2 = []
+        if($('#nodes2_metadata').val() != '')
+            nodesExportedColumnIds_2 = $('#nodes2_metadata').val().split(',')
+        nodesExportedColumnIds = [nodesExportedColumnIds_1, nodesExportedColumnIds_2]
         linksExportedColumnIds = []
     } else if(typeOfGraph == 'citation'){
-        nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
-        linksExportedColumnIds = $('#citationLinks_metadata').val().split(',')
+        if($('#nodes_metadata').val() != '')
+            nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
+        else
+            nodesExportedColumnIds = []
+        if($('#citationLinks_metadata').val() != '')
+            linksExportedColumnIds = $('#citationLinks_metadata').val().split(',')
+        else
+            linksExportedColumnIds = []
     } else if(typeOfGraph == 'table'){
-        nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
+        if($('#nodes_metadata').val() != '')
+            nodesExportedColumnIds = $('#nodes_metadata').val().split(',')
+        else
+            nodesExportedColumnIds = []
         linksExportedColumnIds = []
     }
     
