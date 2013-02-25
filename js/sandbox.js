@@ -1109,7 +1109,7 @@ function getMonopartiteLinks(nodesColumnId, nodesMultiples, nodesSeparator, link
     var ghostNodesList = table.map(function(d,i){
         // Here we want to keep tracking the links.
         // So we return objects that contain the ghostNode and the list of linked nodes.
-        // There is only one linked nodes if there are no multiples for nodes, of course...
+        // There is only one linked node if there are no multiples for nodes, of course...
         
         // Linked nodes
         var linkedNodesList;
@@ -1143,7 +1143,7 @@ function getMonopartiteLinks(nodesColumnId, nodesMultiples, nodesSeparator, link
             })
         );
     }
-    
+
     // Clean
     var temp_ghostNodesList = ghostNodesList
         .map(function(d){
@@ -1439,18 +1439,18 @@ function buildGraph_(){
         }
         
         var linksColumnId = $("#linksCategory").val();
-        var linksMultiples = ($("#linksMultipleSeparator").val() != "nomultiples");
+        var linksMultiples = ($("#edgesMultipleSeparator").val() != "nomultiples");
         var linksSeparator;
         if(linksMultiples){
-            if($("#linksMultipleSeparator").val() == "coma")
+            if($("#edgesMultipleSeparator").val() == "coma")
                 linksSeparator = ",";
-            if($("#linksMultipleSeparator").val() == "semicolon")
+            if($("#edgesMultipleSeparator").val() == "semicolon")
                 linksSeparator = ";";
-            if($("#linksMultipleSeparator").val() == "dash")
+            if($("#edgesMultipleSeparator").val() == "dash")
                 linksSeparator = "-";
-            if($("#linksMultipleSeparator").val() == "space")
+            if($("#edgesMultipleSeparator").val() == "space")
                 linksSeparator = " ";
-            if($("#linksMultipleSeparator").val() == "pipe")
+            if($("#edgesMultipleSeparator").val() == "pipe")
                 linksSeparator = "|";
         }
                 
