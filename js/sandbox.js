@@ -1269,41 +1269,52 @@ function getBipartiteLinks(nodesColumnId_1, nodesMultiples_1, nodesSeparator_1, 
     secondaryNodesList = [];
     for(var i=0; i<temp_secondaryNodesList.length; i++){
         if(i==0 || temp_secondaryNodesList[i-1].secondaryNode != temp_secondaryNodesList[i].secondaryNode) {
-            // The element is different from the previous one. We just add it, ok...
-            secondaryNodesList.push(temp_secondaryNodesList[i]);
+            // The element is different from the previous one. We add it and we reformat tableRows
+            secondaryNodesList.push({
+                secondaryNode:    temp_secondaryNodesList[i].secondaryNode
+            ,   linkedNodes:      temp_secondaryNodesList[i].linkedNodes
+                                    .map(function(d){
+                                            return {node: d, tableRows: temp_secondaryNodesList[i].tableRows}
+                                        })
+            });
         } else {
             // The element is the same. Then we have to merge: add the new linked nodes.
             var currentLinkedNodesList = secondaryNodesList[secondaryNodesList.length-1].linkedNodes;
-            var currentTableRows = secondaryNodesList[secondaryNodesList.length-1].tableRows;
             
             temp_secondaryNodesList[i].linkedNodes.forEach(function(candidate_linked_node){
                 if(currentLinkedNodesList.every(function(linked_node){
-                    return linked_node != candidate_linked_node;
+                    return linked_node.node != candidate_linked_node;
                 })){
                     // If currentLinkedNodesList contains no candidate_linked_node
                     // That is, if the candidate_linked_node is new, just add it.
-                    currentLinkedNodesList.push(candidate_linked_node);
+                    currentLinkedNodesList.push({
+                        node: candidate_linked_node
+                    ,   tableRows: temp_secondaryNodesList[i].tableRows
+                    });
+                } else {
+                    // Else add the tableRows to previous tableRows if currentLinkedNodesList contains a candidate_linked_node
+                    currentLinkedNodesList.forEach(function(linked_node){
+                        if(linked_node.node == candidate_linked_node){
+                            temp_secondaryNodesList[i].tableRows.forEach(function(tr){
+                                if(linked_node.tableRows.indexOf(tr) < 0){
+                                    linked_node.tableRows.push(tr)
+                                }
+                            })
+                            
+                        }
+                    })
                 }
+
             });
             
-            temp_secondaryNodesList[i].tableRows.forEach(function(candidate_table_row){
-                if(currentTableRows.every(function(table_row){
-                    return table_row != candidate_table_row;
-                })){
-                    // If currentTableRows contains no candidate_table_row
-                    // That is, if the candidate_table_row is new, just add it.
-                    currentTableRows.push(candidate_table_row);
-                }
-            });
+            
         }
     }
-    
-    // console.log(secondaryNodesList.filter(function(d,i){return i<10;}));
-    
+
     // Now we can build the bipartite graph of nodes and secondaryNodes linked.
     var links = d3.merge(secondaryNodesList.map(function(d){
         return d.linkedNodes.map(function(dd){
-            return {source:dd, target:d.secondaryNode, sourceColId:nodesColumnId_1, targetColId:nodesColumnId_2, tableRows:d.tableRows};
+            return {source:dd.node, target:d.secondaryNode, sourceColId:nodesColumnId_1, targetColId:nodesColumnId_2, tableRows:dd.tableRows};
         });
     }));
     
