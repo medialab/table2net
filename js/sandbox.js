@@ -1135,7 +1135,7 @@ function getMonopartiteLinks(nodesColumnId, nodesMultiples, nodesSeparator, link
     if(linksMultiples){
         ghostNodesList = d3.merge(
             ghostNodesList.map(function(d,i){
-                subGhostNodes = d.ghostNode.split(linksSeparator);
+                subGhostNodes = (d.ghostNode || '').split(linksSeparator);
                 return subGhostNodes.map(function(dd){
                     // NB: array.slice(0) is just cloning the array. This is necessary here.
                     return {ghostNode:dd, linkedNodes:d.linkedNodes.slice(0), tableRows:d.tableRows.slice(0)};
