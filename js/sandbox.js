@@ -1190,9 +1190,9 @@ function getMonopartiteLinks(nodesColumnId, nodesMultiples, nodesSeparator, link
                     var node1 = d.linkedNodes[i];
                     var node2 = d.linkedNodes[j];
                     if(node1 < node2){
-                        localLinks.push({source:node1, target:node2, sourceColId:nodesColumnId, targetColId:nodesColumnId, tableRows:d.tableRows});
+                        localLinks.push({source:node1, target:node2, sourceColId:nodesColumnId, targetColId:nodesColumnId, tableRows:d.tableRows, ghostNodes: [d.ghostNode]});
                     } else {
-                        localLinks.push({source:node2, target:node1, sourceColId:nodesColumnId, targetColId:nodesColumnId, tableRows:d.tableRows});
+                        localLinks.push({source:node2, target:node1, sourceColId:nodesColumnId, targetColId:nodesColumnId, tableRows:d.tableRows, ghostNodes: [d.ghostNode]});
                     }
                 }
             });
@@ -1211,6 +1211,7 @@ function getMonopartiteLinks(nodesColumnId, nodesMultiples, nodesSeparator, link
             links.push(temp_links[i]);
         } else {
             links[links.length-1].tableRows = links[links.length-1].tableRows.concat(temp_links[i].tableRows);
+            links[links.length-1].ghostNodes = links[links.length-1].ghostNodes.concat(temp_links[i].ghostNodes);
         }
     }
     return links;
