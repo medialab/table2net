@@ -1734,6 +1734,9 @@ function buildGraph_(){
     content.push("\n" +  '<attributes class="edge" mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
     content.push("\n" +  '<attribute id="attr_type" title="Type" type="string"></attribute>');
     content.push("\n" +  '<attribute id="matchings_count" title="Matchings Count" type="integer"></attribute>');
+    if(typeOfGraph == 'mono'){
+        content.push("\n" +  '<attribute id="shared_values" title="Shared values" type="string"></attribute>');
+    }
     linksExportedColumnIds.forEach(function(colId){
         content.push("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>');
     });
@@ -1943,6 +1946,9 @@ function buildGraph_(){
         // AttributeValues
         content.push("\n" +  '<attvalues>');
         content.push("\n" +  '<attvalue for="matchings_count" value="'+xmlEntities(d.tableRows.length)+'"></attvalue>');
+        if(typeOfGraph == 'mono'){
+            content.push("\n" +  '<attvalue for="shared_values" value="'+xmlEntities(d.ghostNodes.join('; '))+'"></attvalue>');
+        }
         content.push("\n" +  '<attvalue for="attr_type" value="'+xmlEntities(type)+'"></attvalue>');
         
         linksExportedColumnIds.forEach(function(colId){
