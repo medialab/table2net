@@ -1190,9 +1190,9 @@ function getMonopartiteLinks(nodesColumnId, nodesMultiples, nodesSeparator, link
                     var node1 = d.linkedNodes[i];
                     var node2 = d.linkedNodes[j];
                     if(node1 < node2){
-                        localLinks.push({source:node1, target:node2, sourceColId:nodesColumnId, targetColId:nodesColumnId, tableRows:d.tableRows});
+                        localLinks.push({source:node1, target:node2, sourceColId:nodesColumnId, targetColId:nodesColumnId, tableRows:d.tableRows, ghostNodes: [d.ghostNode]});
                     } else {
-                        localLinks.push({source:node2, target:node1, sourceColId:nodesColumnId, targetColId:nodesColumnId, tableRows:d.tableRows});
+                        localLinks.push({source:node2, target:node1, sourceColId:nodesColumnId, targetColId:nodesColumnId, tableRows:d.tableRows, ghostNodes: [d.ghostNode]});
                     }
                 }
             });
@@ -1211,6 +1211,7 @@ function getMonopartiteLinks(nodesColumnId, nodesMultiples, nodesSeparator, link
             links.push(temp_links[i]);
         } else {
             links[links.length-1].tableRows = links[links.length-1].tableRows.concat(temp_links[i].tableRows);
+            links[links.length-1].ghostNodes = links[links.length-1].ghostNodes.concat(temp_links[i].ghostNodes);
         }
     }
     return links;
@@ -1733,6 +1734,9 @@ function buildGraph_(){
     content.push("\n" +  '<attributes class="edge" mode="'+((dynMode!="year")?('static'):('dynamic'))+'">');
     content.push("\n" +  '<attribute id="attr_type" title="Type" type="string"></attribute>');
     content.push("\n" +  '<attribute id="matchings_count" title="Matchings Count" type="integer"></attribute>');
+    if(typeOfGraph == 'mono'){
+        content.push("\n" +  '<attribute id="shared_values" title="Shared values" type="string"></attribute>');
+    }
     linksExportedColumnIds.forEach(function(colId){
         content.push("\n" +  '<attribute id="attr_'+colId+'" title="'+xmlEntities(tableHeader[colId])+'" type="string"></attribute>');
     });
@@ -1942,6 +1946,9 @@ function buildGraph_(){
         // AttributeValues
         content.push("\n" +  '<attvalues>');
         content.push("\n" +  '<attvalue for="matchings_count" value="'+xmlEntities(d.tableRows.length)+'"></attvalue>');
+        if(typeOfGraph == 'mono'){
+            content.push("\n" +  '<attvalue for="shared_values" value="'+xmlEntities(d.ghostNodes.join('; '))+'"></attvalue>');
+        }
         content.push("\n" +  '<attvalue for="attr_type" value="'+xmlEntities(type)+'"></attvalue>');
         
         linksExportedColumnIds.forEach(function(colId){
